@@ -1,0 +1,125 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Consumer Data Standards 1.36.0 security profile, ACCC CDR Register brand entry, and
+  live probes of the EnergyAustralia CDR surfaces on 2026-07-27
+docs: https://consumerdatastandardsaustralia.github.io/standards/#security-profile
+note: >-
+  `derive-authentication.py` returns zero schemes for this provider: the Data Standards
+  Body CDS OpenAPI documents deliberately omit `components.securitySchemes`, because
+  authorisation is normatively specified in the separate CDR Information Security
+  profile rather than in the API contracts. This profile was therefore authored from the
+  published CDR security profile plus the live probe evidence in review.yml.
+summary:
+  types: [none, mutualTLS, oauth2, openIdConnect]
+  api_key_in: []
+  oauth2_flows: [authorizationCode]
+  surfaces: 3
+  self_serve_signup: false
+surfaces:
+- name: CDR Energy Plans (Product Reference Data)
+  host: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  auth: none
+  operations: [listEnergyPlans, getEnergyPlanDetail]
+  required_headers:
+  - name: x-v
+    required: true
+    description: >-
+      Requested payload version as a positive integer. Verified: /energy/plans answers
+      at x-v 1; /energy/plans/{planId} rejects x-v 1 with HTTP 406 and answers at x-v 3.
+  - name: x-min-v
+    required: false
+    description: Minimum acceptable payload version.
+  evidence: >-
+    GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans with
+    x-v 1 returned HTTP 200 anonymously on 2026-07-27 (re-verified; response carried
+    x-v 1, x-fapi-interaction-id and access-control-allow-origin *). No key, no
+    registration, no consent.
+- name: CDR Common Discovery
+  host: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  auth: none
+  operations: [getStatus, getOutages]
+  required_headers:
+  - name: x-v
+    required: true
+  evidence: >-
+    GET /discovery/status returned HTTP 200 with data.status "OK"; GET
+    /discovery/outages returned HTTP 200 with an empty outages array (2026-07-27).
+- name: CDR Energy Consumer Data Sharing
+  host: https://authncdr.energyaustralia.com.au
+  auth: mutualTLS + oauth2 + openIdConnect
+  gated: accredited-only
+  operations:
+  - getCustomer
+  - getCustomerDetail
+  - listEnergyAccounts
+  - getEnergyAccountDetail
+  - getEnergyAccountPaymentSchedule
+  - getEnergyAccountConcessions
+  - getEnergyAccountBalance
+  - listEnergyAccountBalancesBulk
+  - listEnergyAccountBalancesSpecificAccounts
+  - getEnergyAccountInvoices
+  - listEnergyAccountInvoicesBulk
+  - listEnergyInvoicesForSpecificAccounts
+  - getBillingForEnergyAccount
+  - listEnergyAccountBillingBulk
+  - listEnergyAccountBillingForSpecificAccounts
+  - listElectricityServicePoints
+  - getElectricityServicePointDetail
+  - getElectricityServicePointUsage
+  - listElectricityUsageBulk
+  - listElectricityUsageForServicePoints
+  - getElectricityDERForServicePoint
+  - listElectricityDERBulk
+  - listElectricityDERForSpecificServicePoints
+  evidence: >-
+    ACCC CDR Register GET /cdr-register/v1/energy/data-holders/brands/summary returned
+    HTTP 200 listing EnergyAustralia (dataHolderBrandId
+    1cc7833a-b834-ed11-a832-000d3a8830d6, ABN 99086014968) with publicBaseUri
+    https://authncdr.energyaustralia.com.au. Anonymous GET of
+    https://authncdr.energyaustralia.com.au/.well-known/openid-configuration returned
+    HTTP 404 (re-verified 2026-07-27), so the live OIDC metadata is not readable without
+    accreditation.
+schemes:
+- name: CDR mutual TLS
+  type: mutualTLS
+  description: >-
+    All resource and token requests are made over mutual TLS using client transport
+    certificates issued through the ACCC CDR Register PKI. Holder-of-key is bound to the
+    access token per FAPI 1.0 Advanced.
+  sources: [https://consumerdatastandardsaustralia.github.io/standards/#security-profile]
+- name: CDR OpenID Connect
+  type: openIdConnect
+  description: >-
+    OpenID Connect identity layer. The data holder's discovery document is published at
+    {publicBaseUri}/.well-known/openid-configuration but is reachable only over mTLS
+    with a CDR Register-issued certificate.
+  openIdConnectUrl: https://authncdr.energyaustralia.com.au/.well-known/openid-configuration
+  reachable_anonymously: false
+  sources: [https://consumerdatastandardsaustralia.github.io/standards/#security-profile]
+- name: CDR OAuth2 (FAPI 1.0 Advanced)
+  type: oauth2
+  description: >-
+    Authorization code flow with PKCE, Pushed Authorization Requests (PAR), request
+    object signing and private_key_jwt client authentication, per the CDR Information
+    Security profile. Access tokens are consent-scoped and sharing-duration bound.
+  flows:
+  - flow: authorizationCode
+    scopes_ref: scopes/energyaustralia-scopes.yml
+  sources: [https://consumerdatastandardsaustralia.github.io/standards/#security-profile]
+onboarding:
+  self_serve: false
+  path: >-
+    There is no developer signup. To read any EnergyAustralia consumer data a party must
+    be accredited by the ACCC as a Data Recipient (or operate as a CDR representative /
+    sponsored ADR under an accredited intermediary), onboard to the CDR Register, obtain
+    transport and signing certificates, register a software product, and then obtain
+    per-consumer consent through the authorisation flow.
+  docs: https://www.cdr.gov.au/
+  provider_faq: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
+secondary_data_holder:
+  name: AEMO
+  role: >-
+    Australian Energy Market Operator acts as secondary data holder for NMI standing
+    data, metering data and the DER register; the retailer proxies those requests.

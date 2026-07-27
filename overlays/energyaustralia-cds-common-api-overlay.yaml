@@ -1,0 +1,93 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for EnergyAustralia CDR Common API
+  version: 1.0.0
+extends: openapi/energyaustralia-cds-common-api-openapi.yml
+x-apievangelist:
+  generated: '2026-07-27'
+  method: generated
+  source: >-
+    Live probes of the EnergyAustralia CDR brand path on 2026-07-27. Binds the shared
+    Data Standards Body Common API contract to the real EnergyAustralia hosts and
+    records which of its four operations are actually reachable, without mutating the
+    original.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: energyaustralia
+    x-apievangelist-provider-name: EnergyAustralia
+    x-apievangelist-spec-provenance: >-
+      Verbatim Data Standards Body contract (CDR Common API 1.36.0), not authored by
+      EnergyAustralia.
+    x-apievangelist-verified: '2026-07-27'
+- target: $.servers
+  update:
+  - url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+    description: >-
+      AER Energy Made Easy CDR gateway, EnergyAustralia brand path. Serves the two
+      unauthenticated Discovery operations. Verified HTTP 200 on both, 2026-07-27.
+    x-access: public
+    x-verified: true
+  - url: https://authncdr.energyaustralia.com.au/cds-au/v1
+    description: >-
+      EnergyAustralia's registered CDR publicBaseUri. Serves the two authenticated
+      Customer operations. ACCREDITED-ONLY; HTTP 404 on every anonymous probe.
+    x-access: accredited-only
+    x-verified: false
+  - url: https://mtls.dh.example.com/cds-au/v1
+    description: MTLS (original Data Standards Body placeholder, retained for reference)
+- target: $.components
+  update:
+    securitySchemes:
+      cdrOAuth2:
+        type: oauth2
+        description: >-
+          CDR Information Security profile — FAPI 1.0 Advanced. Not declared in the
+          source document; added so the customer operations carry a machine-checkable
+          contract. Endpoint URLs are unverified (OIDC discovery is not anonymously
+          reachable).
+        flows:
+          authorizationCode:
+            authorizationUrl: https://authncdr.energyaustralia.com.au/authorize
+            tokenUrl: https://authncdr.energyaustralia.com.au/token
+            x-unverified: true
+            scopes:
+              openid: Mandatory OpenID Connect base scope
+              common:customer.basic:read: Name and occupation, or organisation name and ABN/ACN
+              common:customer.detail:read: Basic customer data plus phone, email and addresses
+      cdrMutualTLS:
+        type: mutualTLS
+        description: CDR Register-issued client transport certificate.
+- target: $.paths['/discovery/status'].get
+  update:
+    x-apievangelist-verified:
+      date: '2026-07-27'
+      status: 200
+      request: GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+      observed:
+        status: OK
+        updateTime: '2026-07-27T12:14:46.428Z'
+    x-access: public
+    x-role: >-
+      This is the only operational-health surface published under the EnergyAustralia
+      name. There is no human status page.
+- target: $.paths['/discovery/outages'].get
+  update:
+    x-apievangelist-verified:
+      date: '2026-07-27'
+      status: 200
+      request: GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/outages
+      observed:
+        outages: []
+    x-access: public
+- target: $.paths['/common/customer'].get
+  update:
+    x-access: accredited-only
+    x-apievangelist-note: >-
+      Not reachable on the AER gateway — the gateway serves product data only. Served by
+      authncdr.energyaustralia.com.au to accredited Data Recipients under consent.
+- target: $.paths['/common/customer/detail'].get
+  update:
+    x-access: accredited-only
+    x-apievangelist-note: >-
+      Not reachable on the AER gateway. Accredited-only under CDR consent.

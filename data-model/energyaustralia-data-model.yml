@@ -1,0 +1,201 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  openapi/energyaustralia-cds-energy-api-openapi.yml (133 schemas),
+  openapi/energyaustralia-cds-common-api-openapi.yml
+note: >-
+  Entity-relationship graph derived from the Consumer Data Standards energy schemas —
+  $ref links and id-reference fields. This is the shape of the consumer data an
+  accredited Data Recipient can obtain from EnergyAustralia under consent, plus the
+  public product-reference-data shape.
+domains:
+- name: Product Reference Data
+  access: public, unauthenticated
+  entities: [EnergyPlan, EnergyPlanDetailV3, EnergyPlanContractV3]
+- name: Customer
+  access: accredited-only
+  entities: [CommonCustomer, CommonPerson, CommonOrganisation]
+- name: Accounts and Billing
+  access: accredited-only
+  entities: [EnergyAccountV2, EnergyAccountDetailV4, EnergyBalance, EnergyInvoice, EnergyBillingTransactionV3, EnergyPaymentSchedule, EnergyConcession]
+- name: Service Points and Metering
+  access: accredited-only (AEMO as secondary data holder)
+  entities: [EnergyServicePointV2, EnergyServicePointDetailV2, EnergyUsageRead, EnergyDerRecord]
+identifiers:
+- id: planId
+  type: EnergyPlanId
+  description: >-
+    Fully qualified plan identifier. Observed live value on the EnergyAustralia brand
+    path: ENE831725MRE15@EME — the @EME suffix is the Energy Made Easy origin marker.
+  entity: EnergyPlan
+- id: accountId
+  type: EnergyAccountId
+  description: Tokenised account identifier, unique within the data holder.
+  entity: EnergyAccountV2
+- id: servicePointId
+  type: EnergyServicePointId
+  description: >-
+    The National Metering Identifier (NMI) — the physical connection point identifier
+    used across the Australian electricity market.
+  entity: EnergyServicePointV2
+- id: brand
+  type: string
+  description: 'Retailer brand key on plan records. Observed value: "energyaustralia" (brandName "EnergyAustralia").'
+  entity: EnergyPlan
+entities:
+- name: EnergyPlan
+  description: A published energy plan offered to the market.
+  key: planId
+  fields_of_note: [planId, effectiveFrom, effectiveTo, type, fuelType, brand, brandName, applicationUri, customerType, geography]
+  access: public
+  operations: [listEnergyPlans, getEnergyPlanDetail]
+  volume_observed: 1122 EnergyAustralia plans (265 with fuelType GAS) on 2026-07-27
+- name: EnergyPlanDetailV3
+  description: Full plan detail including the contract terms.
+  key: planId
+  access: public
+  operations: [getEnergyPlanDetail]
+- name: EnergyPlanContractV3
+  description: >-
+    Terms for supply under a plan — tariff periods, discounts, incentives, fees,
+    eligibility, solar feed-in tariffs, controlled load and GreenPower charges. Split
+    into electricityContract and gasContract, conditional on fuelType.
+  access: public
+- name: CommonCustomer
+  description: The authorised customer — person or organisation.
+  access: accredited-only
+  operations: [getCustomer, getCustomerDetail]
+  scopes: [common:customer.basic:read, common:customer.detail:read]
+- name: EnergyAccountV2
+  description: An energy account held by the consumer.
+  key: accountId
+  fields_of_note: [accountId, accountNumber, displayName, creationDate, plans, openStatus]
+  access: accredited-only
+  operations: [listEnergyAccounts, getEnergyAccountDetail]
+  scopes: [energy:accounts.basic:read, energy:accounts.detail:read]
+- name: EnergyServicePointV2
+  description: An electricity connection point (NMI) with jurisdiction and classification.
+  key: servicePointId
+  access: accredited-only
+  operations: [listElectricityServicePoints, getElectricityServicePointDetail]
+  scopes: [energy:electricity.servicepoints.basic:read, energy:electricity.servicepoints.detail:read]
+- name: EnergyUsageRead
+  description: Interval or accumulated meter read for a service point over a period.
+  access: accredited-only
+  operations: [getElectricityServicePointUsage, listElectricityUsageBulk, listElectricityUsageForServicePoints]
+  scopes: [energy:electricity.usage:read]
+- name: EnergyDerRecord
+  description: Distributed Energy Resource register record — solar PV, battery, inverter.
+  access: accredited-only
+  operations: [getElectricityDERForServicePoint, listElectricityDERBulk, listElectricityDERForSpecificServicePoints]
+  scopes: [energy:electricity.der:read]
+- name: EnergyBalance
+  description: Current balance on an energy account.
+  access: accredited-only
+  operations: [getEnergyAccountBalance, listEnergyAccountBalancesBulk, listEnergyAccountBalancesSpecificAccounts]
+  scopes: [energy:billing:read]
+- name: EnergyInvoice
+  description: An issued invoice, with period, usage charges and pay-on-time discount.
+  access: accredited-only
+  operations: [getEnergyAccountInvoices, listEnergyAccountInvoicesBulk, listEnergyInvoicesForSpecificAccounts]
+  scopes: [energy:billing:read]
+- name: EnergyBillingTransactionV3
+  description: >-
+    A billing transaction — usage, demand, once-off, other or payment, discriminated by
+    transactionUType.
+  access: accredited-only
+  operations: [getBillingForEnergyAccount, listEnergyAccountBillingBulk, listEnergyAccountBillingForSpecificAccounts]
+  scopes: [energy:billing:read]
+- name: EnergyPaymentSchedule
+  description: >-
+    The agreed payment arrangement, discriminated by paymentScheduleUType into
+    cardDebit, directDebit, digitalWallet or manualPayment.
+  access: accredited-only
+  operations: [getEnergyAccountPaymentSchedule]
+  scopes: [energy:accounts.paymentschedule:read]
+- name: EnergyConcession
+  description: A concession or rebate applied to an account.
+  access: accredited-only
+  operations: [getEnergyAccountConcessions]
+  scopes: [energy:accounts.concessions:read]
+relationships:
+- from: EnergyAccountV2
+  to: EnergyPlan
+  kind: has_many
+  via: 'plans[].planOverview'
+  note: An account holds one or more plans.
+- from: EnergyAccountDetailV4
+  to: EnergyServicePointV2
+  kind: has_many
+  via: 'plans[].servicePointIds'
+  note: Each plan on an account links to one or more NMIs.
+- from: EnergyServicePointV2
+  to: EnergyUsageRead
+  kind: has_many
+  via: servicePointId
+  note: Usage reads are keyed by service point.
+- from: EnergyServicePointV2
+  to: EnergyDerRecord
+  kind: has_many
+  via: servicePointId
+  note: DER devices registered against the connection point.
+- from: EnergyAccountV2
+  to: EnergyBalance
+  kind: has_one
+  via: accountId
+- from: EnergyAccountV2
+  to: EnergyInvoice
+  kind: has_many
+  via: accountId
+- from: EnergyAccountV2
+  to: EnergyBillingTransactionV3
+  kind: has_many
+  via: accountId
+- from: EnergyAccountV2
+  to: EnergyPaymentSchedule
+  kind: has_one
+  via: accountId
+- from: EnergyAccountV2
+  to: EnergyConcession
+  kind: has_many
+  via: accountId
+- from: EnergyAccountDetailV4
+  to: EnergyPlanDetailV3
+  kind: has_one
+  via: 'plans[].planDetail'
+- from: EnergyPlanDetailV3
+  to: EnergyPlanContractV3
+  kind: has_one
+  via: electricityContract / gasContract
+  note: Conditional on fuelType.
+- from: CommonCustomer
+  to: EnergyAccountV2
+  kind: has_many
+  via: consent
+  note: Bound by CDR consent rather than an id field in the payload.
+- from: EnergyBillingTransactionV3
+  to: EnergyServicePointV2
+  kind: belongs_to
+  via: servicePointId
+  note: Usage transactions carry the NMI they were metered at.
+polymorphism:
+  note: >-
+    CDS uses a "UType" discriminator convention rather than JSON Schema discriminators.
+  discriminators:
+  - {schema: EnergyBillingTransactionV3, field: transactionUType, values: [usage, demand, onceOff, otherCharges, payment]}
+  - {schema: EnergyPaymentSchedule, field: paymentScheduleUType, values: [cardDebit, directDebit, digitalWallet, manualPayment]}
+  - {schema: CommonCustomer, field: customerUType, values: [person, organisation]}
+conditional_fields:
+  note: >-
+    CDS marks conditionally-mandatory fields with the `x-conditional` extension rather
+    than with oneOf/anyOf — a schema-level convention worth honouring in any generated
+    client or validator.
+external_data:
+  secondary_data_holder: AEMO
+  note: >-
+    Service point standing data, metering data and the DER register are held by AEMO as
+    designated secondary data holder; EnergyAustralia proxies those requests. The
+    consumer sees one API, but two organisations back it.
+cross_references:
+  scopes: scopes/energyaustralia-scopes.yml
+  conventions: conventions/energyaustralia-conventions.yml

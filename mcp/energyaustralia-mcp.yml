@@ -1,0 +1,290 @@
+generated: '2026-07-27'
+method: derived
+status: candidate
+published: false
+source: openapi/energyaustralia-cds-energy-api-openapi.yml, openapi/energyaustralia-cds-common-api-openapi.yml
+note: EnergyAustralia publishes NO MCP server. No hosted or remote MCP endpoint was found in the provider's
+  docs, in npm under @modelcontextprotocol, or in any public MCP registry, and the provider has no developer
+  portal to publish one on. This is a CANDIDATE manifest derived one-tool-per-operation from the Consumer
+  Data Standards contracts already harvested in openapi/ — a design for what an MCP server over this surface
+  would expose, not a claim that one exists. Each tool inherits its real input schema from the backing
+  OpenAPI operation's parameters and requestBody.
+server:
+  name: energyaustralia
+  transport: http
+  url: null
+  note: No hosted server exists. A self-hosted server would front the two surfaces below.
+surfaces:
+- name: public
+  base_url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  auth: none
+  tools: 4
+  note: AER Energy Made Easy CDR gateway, EnergyAustralia brand path. Anyone can build an MCP server over
+    these four tools today.
+- name: consumer
+  base_url: https://authncdr.energyaustralia.com.au
+  auth: mTLS + OAuth2/OIDC FAPI 1.0 Advanced
+  tools: 23
+  note: Accredited-only. An MCP server over these tools requires ACCC accreditation as a Data Recipient
+    plus per-consumer CDR consent; it cannot be built by an unaccredited party.
+tool_count: 27
+tools:
+- name: list_energy_plans
+  description: Get Generic Plans
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyPlans
+  access: public
+  scopes: []
+  inputs:
+  - type
+  - fuelType
+  - effective
+  - updated-since
+  - brand
+  - page
+  - page-size
+- name: get_energy_plan_detail
+  description: Get Generic Plan Detail
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyPlanDetail
+  access: public
+  scopes: []
+  inputs:
+  - planId
+- name: list_electricity_service_points
+  description: Get Service Points
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listElectricityServicePoints
+  access: accredited-only
+  scopes:
+  - energy:electricity.servicepoints.basic:read
+  inputs:
+  - page
+  - page-size
+- name: get_electricity_service_point_detail
+  description: Get Service Point Detail
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getElectricityServicePointDetail
+  access: accredited-only
+  scopes:
+  - energy:electricity.servicepoints.detail:read
+  inputs:
+  - servicePointId
+- name: get_electricity_service_point_usage
+  description: Get Usage For Service Point
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getElectricityServicePointUsage
+  access: accredited-only
+  scopes:
+  - energy:electricity.usage:read
+  inputs:
+  - servicePointId
+  - oldest-date
+  - newest-date
+  - interval-reads
+  - page
+  - page-size
+- name: list_electricity_usage_bulk
+  description: Get Bulk Usage
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listElectricityUsageBulk
+  access: accredited-only
+  scopes:
+  - energy:electricity.usage:read
+  inputs:
+  - interval-reads
+  - oldest-date
+  - newest-date
+  - page
+  - page-size
+- name: list_electricity_usage_for_service_points
+  description: Get Usage For Specific Service Points
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listElectricityUsageForServicePoints
+  access: accredited-only
+  scopes:
+  - energy:electricity.usage:read
+  inputs:
+  - oldest-date
+  - newest-date
+  - interval-reads
+  - page
+  - page-size
+  - requestBody
+- name: get_electricity_d_e_r_for_service_point
+  description: Get DER For Service Point
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getElectricityDERForServicePoint
+  access: accredited-only
+  scopes:
+  - energy:electricity.der:read
+  inputs:
+  - servicePointId
+- name: list_electricity_d_e_r_bulk
+  description: Get Bulk DER
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listElectricityDERBulk
+  access: accredited-only
+  scopes:
+  - energy:electricity.der:read
+  inputs:
+  - page
+  - page-size
+- name: list_electricity_d_e_r_for_specific_service_points
+  description: Get DER For Specific Service Points
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listElectricityDERForSpecificServicePoints
+  access: accredited-only
+  scopes:
+  - energy:electricity.der:read
+  inputs:
+  - page
+  - page-size
+  - requestBody
+- name: list_energy_accounts
+  description: Get Energy Accounts
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccounts
+  access: accredited-only
+  scopes:
+  - energy:accounts.basic:read
+  inputs:
+  - open-status
+  - page
+  - page-size
+- name: get_energy_account_detail
+  description: Get Energy Account Detail
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyAccountDetail
+  access: accredited-only
+  scopes:
+  - energy:accounts.detail:read
+  inputs:
+  - accountId
+- name: get_energy_account_payment_schedule
+  description: Get Agreed Payment Schedule
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyAccountPaymentSchedule
+  access: accredited-only
+  scopes:
+  - energy:accounts.paymentschedule:read
+  inputs:
+  - accountId
+- name: get_energy_account_concessions
+  description: Get Concessions
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyAccountConcessions
+  access: accredited-only
+  scopes:
+  - energy:accounts.concessions:read
+  inputs:
+  - accountId
+- name: get_energy_account_balance
+  description: Get Balance For Energy Account
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyAccountBalance
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - accountId
+- name: list_energy_account_balances_bulk
+  description: Get Bulk Balances for Energy
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccountBalancesBulk
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - page
+  - page-size
+- name: list_energy_account_balances_specific_accounts
+  description: Get Balances For Specific Energy Accounts
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccountBalancesSpecificAccounts
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - page
+  - page-size
+  - requestBody
+- name: get_energy_account_invoices
+  description: Get Invoices For Account
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getEnergyAccountInvoices
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - accountId
+  - newest-date
+  - oldest-date
+  - page
+  - page-size
+- name: list_energy_account_invoices_bulk
+  description: Get Bulk Invoices
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccountInvoicesBulk
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - newest-date
+  - oldest-date
+  - page
+  - page-size
+- name: list_energy_invoices_for_specific_accounts
+  description: Get Invoices For Specific Accounts
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyInvoicesForSpecificAccounts
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - newest-date
+  - oldest-date
+  - page
+  - page-size
+  - requestBody
+- name: get_billing_for_energy_account
+  description: Get Billing For Account
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#getBillingForEnergyAccount
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - accountId
+  - newest-time
+  - oldest-time
+  - page
+  - page-size
+- name: list_energy_account_billing_bulk
+  description: Get Bulk Billing
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccountBillingBulk
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - newest-time
+  - oldest-time
+  - page
+  - page-size
+- name: list_energy_account_billing_for_specific_accounts
+  description: Get Billing For Specific Accounts
+  source_operation: openapi/energyaustralia-cds-energy-api-openapi.yml#listEnergyAccountBillingForSpecificAccounts
+  access: accredited-only
+  scopes:
+  - energy:billing:read
+  inputs:
+  - newest-time
+  - oldest-time
+  - page
+  - page-size
+  - requestBody
+- name: get_customer
+  description: Get Customer
+  source_operation: openapi/energyaustralia-cds-common-api-openapi.yml#getCustomer
+  access: accredited-only
+  scopes:
+  - common:customer.basic:read
+  inputs: []
+- name: get_customer_detail
+  description: Get Customer Detail
+  source_operation: openapi/energyaustralia-cds-common-api-openapi.yml#getCustomerDetail
+  access: accredited-only
+  scopes:
+  - common:customer.detail:read
+  inputs: []
+- name: get_status
+  description: Get Status
+  source_operation: openapi/energyaustralia-cds-common-api-openapi.yml#getStatus
+  access: public
+  scopes: []
+  inputs: []
+- name: get_outages
+  description: Get Outages
+  source_operation: openapi/energyaustralia-cds-common-api-openapi.yml#getOutages
+  access: public
+  scopes: []
+  inputs: []

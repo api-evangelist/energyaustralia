@@ -1,0 +1,59 @@
+generated: '2026-07-27'
+method: searched
+source: https://api.github.com/repos/ConsumerDataStandardsAustralia/standards/releases
+docs: https://github.com/ConsumerDataStandardsAustralia/standards/releases
+provider_published: false
+publisher: Data Standards Body (DSB), Australian Treasury
+note: >-
+  EnergyAustralia publishes no changelog. The dated change record that actually governs
+  the contracts in this repo is the Consumer Data Standards release history maintained
+  by the Data Standards Body — every version bump of the CDR Energy API and CDR Common
+  API that EnergyAustralia must implement lands there, and the harvested OpenAPIs in
+  openapi/ are pinned to release v1.36.0. Recent window only; the release feed is the
+  source of truth.
+scheme: semver
+current_version: 1.36.0
+current_version_date: '2025-12-04'
+applies_to:
+- openapi/energyaustralia-cds-energy-api-openapi.yml
+- openapi/energyaustralia-cds-common-api-openapi.yml
+entries:
+- version: 1.36.0
+  date: '2025-12-04'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.36.0
+  breaking: false
+  note: >-
+    Current release. The version of the CDR Energy API and CDR Common API captured
+    verbatim in openapi/ in this repo.
+- version: 1.35.1
+  date: '2025-10-08'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.35.1
+  breaking: false
+  note: Patch release.
+- version: 1.35.0
+  date: '2025-07-29'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.35.0
+  breaking: false
+- version: 1.34.1
+  date: '2025-04-11'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.34.1
+  breaking: false
+  note: Patch release.
+- version: 1.34.0
+  date: '2025-03-13'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.34.0
+  breaking: false
+- version: 1.33.1
+  date: '2025-03-06'
+  url: https://github.com/ConsumerDataStandardsAustralia/standards/releases/tag/v1.33.1
+  breaking: false
+  note: Patch release.
+breaking_change_channel:
+  note: >-
+    Breaking changes reach data holders as Future Dated Obligations with a mandatory
+    implementation date, not as a semver major bump. Track the obligations schedule
+    rather than the release tag.
+  url: https://consumerdatastandardsaustralia.github.io/standards/#future-dated-obligations
+  maintenance_repo: https://github.com/ConsumerDataStandardsAustralia/standards-maintenance
+cross_references:
+  lifecycle: lifecycle/energyaustralia-lifecycle.yml

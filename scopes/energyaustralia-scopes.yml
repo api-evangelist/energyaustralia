@@ -1,0 +1,140 @@
+generated: '2026-07-27'
+method: derived
+source: openapi/energyaustralia-cds-energy-api-openapi.yml, openapi/energyaustralia-cds-common-api-openapi.yml
+docs: https://consumerdatastandardsaustralia.github.io/standards/#authorisation-scopes
+note: >-
+  Derived from the per-operation `x-scopes` extension in the Consumer Data Standards
+  CDR Energy API 1.36.0 and CDR Common API 1.36.0. The CDS OpenAPI documents do NOT
+  declare `components.securitySchemes` — authorisation is specified out-of-band in the
+  CDR Information Security profile (FAPI 1.0 Advanced), and the resource-server scopes
+  are carried per operation as `x-scopes`. `derive-oauth-scopes.py` therefore returns
+  zero for this provider; this file was derived by reading `x-scopes` directly.
+  EnergyAustralia is a live registered CDR energy data holder (ACCC CDR Register
+  dataHolderBrandId 1cc7833a-b834-ed11-a832-000d3a8830d6), so these are the scopes an
+  accredited Data Recipient requests against its publicBaseUri. The scope values are
+  ecosystem-wide CDR values, identical for every energy data holder — EnergyAustralia
+  publishes no proprietary scope reference.
+authorization_model:
+  profile: FAPI 1.0 Advanced (CDR Information Security profile)
+  protocol: OAuth 2.0 + OpenID Connect
+  consent: Per-consumer authorisation with an explicit CDR consent and sharing duration
+  authorization_server: >-
+    Published per data holder brand in the ACCC CDR Register. EnergyAustralia's
+    publicBaseUri is https://authncdr.energyaustralia.com.au; its OIDC discovery
+    document was NOT anonymously readable (HTTP 404 on
+    /.well-known/openid-configuration, probed 2026-07-27), so authorizationUrl and
+    tokenUrl could not be captured without ACCC accreditation.
+  discovery_gated: true
+schemes:
+- name: CDR OAuth2 / OIDC (FAPI 1.0 Advanced)
+  type: oauth2
+  source: https://consumerdatastandardsaustralia.github.io/standards/#security-profile
+  flows:
+  - flow: authorizationCode
+    pkce: true
+    par: true
+    authorizationUrl: null
+    tokenUrl: null
+    note: >-
+      Endpoints are discoverable only via the data holder's OIDC discovery document,
+      which requires CDR Register-issued mTLS client certificates to reach.
+scopes:
+- scope: openid
+  description: >-
+    Mandatory OpenID Connect base scope. Required on every CDR authorisation request.
+  flows: [authorizationCode]
+  sources: [https://consumerdatastandardsaustralia.github.io/standards/#authorisation-scopes]
+- scope: common:customer.basic:read
+  description: >-
+    Name and occupation for an individual customer; agent name and role plus
+    organisation name, industry code and ABN/ACN for a non-individual customer.
+  flows: [authorizationCode]
+  operations: [getCustomer]
+  sources: [openapi/energyaustralia-cds-common-api-openapi.yml]
+- scope: common:customer.detail:read
+  description: >-
+    The basic customer data plus phone, email, mail address and residential address.
+  flows: [authorizationCode]
+  operations: [getCustomerDetail]
+  sources: [openapi/energyaustralia-cds-common-api-openapi.yml]
+- scope: energy:accounts.basic:read
+  description: >-
+    Account identifiers, account numbers, display names, creation date, plan overview
+    and open/closed status for the consumer's energy accounts.
+  flows: [authorizationCode]
+  operations: [listEnergyAccounts]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:accounts.detail:read
+  description: >-
+    Full account detail including the plan detail, linked service point (NMI) ids and
+    authorised contacts on the account.
+  flows: [authorizationCode]
+  operations: [getEnergyAccountDetail]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:accounts.paymentschedule:read
+  description: >-
+    The agreed payment schedule for an account — card debit, direct debit, digital
+    wallet or manual payment, with frequency and calculation type.
+  flows: [authorizationCode]
+  operations: [getEnergyAccountPaymentSchedule]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:accounts.concessions:read
+  description: >-
+    Concessions and rebates applied to an energy account.
+  flows: [authorizationCode]
+  operations: [getEnergyAccountConcessions]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:billing:read
+  description: >-
+    Account balances, invoices and billing transactions — the widest-fanout energy
+    scope, backing nine operations across balance, invoice and billing resources.
+  flows: [authorizationCode]
+  operations:
+  - getEnergyAccountBalance
+  - listEnergyAccountBalancesBulk
+  - listEnergyAccountBalancesSpecificAccounts
+  - getEnergyAccountInvoices
+  - listEnergyAccountInvoicesBulk
+  - listEnergyInvoicesForSpecificAccounts
+  - getBillingForEnergyAccount
+  - listEnergyAccountBillingBulk
+  - listEnergyAccountBillingForSpecificAccounts
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:electricity.servicepoints.basic:read
+  description: >-
+    Basic electricity service point (NMI) data — service point id, classification,
+    jurisdiction and status.
+  flows: [authorizationCode]
+  operations: [listElectricityServicePoints]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:electricity.servicepoints.detail:read
+  description: >-
+    Detailed service point data including the NMI standing data held by AEMO as
+    secondary data holder — meters, registers and related participants.
+  flows: [authorizationCode]
+  operations: [getElectricityServicePointDetail]
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:electricity.usage:read
+  description: >-
+    Interval and accumulated electricity usage reads for the consumer's service points.
+  flows: [authorizationCode]
+  operations:
+  - getElectricityServicePointUsage
+  - listElectricityUsageBulk
+  - listElectricityUsageForServicePoints
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+- scope: energy:electricity.der:read
+  description: >-
+    Distributed Energy Resource register data — solar PV, battery and inverter device
+    records associated with the consumer's service points.
+  flows: [authorizationCode]
+  operations:
+  - getElectricityDERForServicePoint
+  - listElectricityDERBulk
+  - listElectricityDERForSpecificServicePoints
+  sources: [openapi/energyaustralia-cds-energy-api-openapi.yml]
+unauthenticated_operations:
+  note: >-
+    These operations carry no `x-scopes` and are served publicly on the AER Energy Made
+    Easy CDR gateway at the EnergyAustralia brand path. Verified HTTP 200 on 2026-07-27.
+  operations: [listEnergyPlans, getEnergyPlanDetail, getStatus, getOutages]

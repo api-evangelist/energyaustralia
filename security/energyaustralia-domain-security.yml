@@ -1,0 +1,37 @@
+generated: '2026-07-27'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.energyaustralia.com.au
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Feb 19 23:59:59 2027 GMT
+  hsts: null
+- host: www.energymadeeasy.gov.au
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Jan 17 23:59:59 2027 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: cdr.energymadeeasy.gov.au
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Jan 31 23:59:59 2027 GMT
+  hsts: null
+domains:
+- domain: energyaustralia.com.au
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: reject
+- domain: energymadeeasy.gov.au
+  dnssec: false
+  caa:
+  - 0 issuewild "awstrust.com"
+  - 0 issuewild "amazon.com"
+  - 0 issuewild "amazonaws.com"
+  - 0 issuewild "amazontrust.com"
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

@@ -1,0 +1,152 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  openapi/energyaustralia-cds-energy-api-openapi.yml,
+  openapi/energyaustralia-cds-common-api-openapi.yml, the Consumer Data Standards 1.36.0
+  security profile, and live probes of the EnergyAustralia CDR surfaces on 2026-07-27.
+note: >-
+  Standards conformance asserted from the harvested contracts and verified behaviour.
+  This is a conformance map, NOT a published compliance program — EnergyAustralia
+  publishes no trust center, no SOC 2 / ISO 27001 attestation and no certification page,
+  so no `Compliance` claim is made anywhere in this repo.
+standards:
+- id: cdr-consumer-data-standards
+  name: CDR Consumer Data Standards (Australia)
+  version: 1.36.0
+  conforms: true
+  evidence: >-
+    Live implementation of the standards contract on the EnergyAustralia brand path:
+    HTTP 200 on /energy/plans (x-v 1, meta.totalRecords 1122),
+    /energy/plans/{planId} (x-v 3), /discovery/status and /discovery/outages.
+    Registered energy data holder in the ACCC CDR Register (dataHolderBrandId
+    1cc7833a-b834-ed11-a832-000d3a8830d6).
+  url: https://consumerdatastandardsaustralia.github.io/standards/
+- id: cdr-energy-designation
+  name: Consumer Data Right — energy sector designation
+  conforms: true
+  evidence: >-
+    Designated energy data holder under the CDR Rules; brand entry live in the ACCC CDR
+    Register with lastUpdated 2026-07-01.
+  url: https://www.cdr.gov.au/
+- id: openapi-3-0-3
+  name: OpenAPI Specification 3.0.3
+  conforms: true
+  evidence: 'Both harvested contracts declare openapi: 3.0.3 and parse cleanly.'
+- id: oauth2
+  name: OAuth 2.0
+  conforms: true
+  scope: authenticated consumer data surface only
+  evidence: >-
+    Required by the CDR Information Security profile. NOT declared as an OpenAPI
+    securityScheme — the CDS documents carry authorisation as per-operation `x-scopes`
+    and specify the security profile out of band.
+  caveat: >-
+    Could not be verified against the live authorisation server: anonymous fetch of
+    https://authncdr.energyaustralia.com.au/.well-known/openid-configuration returned
+    HTTP 404 (2026-07-27).
+- id: oidc
+  name: OpenID Connect Core 1.0
+  conforms: true
+  scope: authenticated consumer data surface only
+  evidence: CDR Information Security profile mandates OIDC for consumer authorisation.
+  caveat: OIDC discovery document not anonymously reachable.
+- id: fapi-1-0-advanced
+  name: FAPI 1.0 Advanced (Financial-grade API security profile)
+  conforms: true
+  scope: authenticated consumer data surface only
+  evidence: >-
+    The CDR Information Security profile is built on FAPI 1.0 Advanced — PAR, PKCE,
+    request object signing, private_key_jwt client authentication and holder-of-key
+    binding. The FAPI header family is present in both harvested contracts
+    (x-fapi-interaction-id, x-fapi-auth-date, x-fapi-customer-ip-address), and
+    x-fapi-interaction-id is returned live even on the unauthenticated public surface.
+  url: https://consumerdatastandardsaustralia.github.io/standards/#security-profile
+- id: mutual-tls
+  name: Mutual TLS (RFC 8705 client authentication / certificate-bound tokens)
+  conforms: true
+  scope: authenticated consumer data surface only
+  evidence: >-
+    Both harvested specs declare an MTLS server (https://mtls.dh.example.com/cds-au/v1);
+    CDR Register-issued transport certificates are required for all resource calls.
+- id: rfc4122-uuid
+  name: RFC 4122 UUID (interaction correlation)
+  conforms: true
+  evidence: >-
+    x-fapi-interaction-id is specified as an RFC 4122 UUID and was returned live as
+    81c6c38d-9be7-44f1-a766-8230044cec05 on the public surface (2026-07-27).
+- id: rfc9457-problem-details
+  name: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    The CDR error envelope is a bespoke `errors[]` list with URN codes served as
+    application/json, not application/problem+json. See
+    errors/energyaustralia-problem-types.yml.
+- id: rfc8594-sunset-header
+  name: RFC 8594 Sunset HTTP header
+  conforms: false
+  evidence: >-
+    Deprecation is handled by the DSB's dated Future Dated Obligations schedule and by
+    406 version negotiation, not by Sunset/Deprecation response headers.
+- id: iso8601-durations
+  name: ISO 8601 durations
+  conforms: true
+  evidence: >-
+    Payment and billing frequency fields are typed x-cds-type ExternalRef and specified
+    as ISO 8601 durations excluding recurrence syntax.
+- id: rfc3339-datetime
+  name: RFC 3339 date and date-time
+  conforms: true
+  evidence: CDS DateString / DateTimeString scalar types are RFC 3339 profiles.
+- id: cors
+  name: W3C CORS
+  conforms: true
+  scope: public product reference data surface
+  evidence: >-
+    Live response carried access-control-allow-origin * and
+    access-control-expose-headers x-v, Retry-After, x-fapi-interaction-id.
+- id: green-button-espi
+  name: Green Button / NAESB ESPI
+  conforms: false
+  evidence: No Green Button or ESPI surface found anywhere in EnergyAustralia's estate.
+- id: openadr
+  name: OpenADR 2.0/3.0
+  conforms: false
+  evidence: No OpenADR reference found.
+- id: ieee-2030-5
+  name: IEEE 2030.5 (SEP2)
+  conforms: false
+  evidence: >-
+    No IEEE 2030.5 surface published by EnergyAustralia. DER data is exposed through the
+    CDR DER register endpoints instead.
+- id: iec-cim
+  name: IEC 61968/61970 Common Information Model
+  conforms: false
+  evidence: No CIM reference found.
+- id: ocpp-ocpi
+  name: OCPP / OCPI (EV charging)
+  conforms: false
+  evidence: >-
+    No OCPP or OCPI surface. EnergyAustralia's EV and solar work runs on partner
+    platforms rather than on an EnergyAustralia API.
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  applicable: false
+  evidence: >-
+    The CDR Energy and Common APIs define no event, streaming or webhook surface, so
+    there is nothing to describe with AsyncAPI. Not a gap — the regime is request/response
+    only.
+- id: graphql
+  name: GraphQL
+  conforms: false
+  applicable: false
+  evidence: 'No /graphql surface on any host probed (cdr.energymadeeasy.gov.au/graphql returned HTTP 404).'
+compliance_program:
+  published: false
+  trust_center: false
+  certifications: []
+  note: >-
+    No trust center, no security.txt, no named certification. probe-security-programs.py
+    returned vdp=none trust=none on 2026-07-27. The only assurance regime EnergyAustralia
+    is subject to for this data is the CDR's own accreditation and audit machinery, which
+    is a regulator obligation rather than a published provider compliance program.

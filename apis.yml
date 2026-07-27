@@ -34,7 +34,15 @@ accessModel:
   - review
   generated: '2026-07-27'
   method: manual
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+imageNote: >-
+  The `image` property was removed in the 2026-07-27 enrichment round. It had been
+  scaffolded to
+  https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png — Groq's logo,
+  not EnergyAustralia's. No correct icon exists yet
+  (.../icons/energyaustralia.png returns HTTP 403) and the corporate site is behind
+  Akamai bot management, so no logo asset could be fetched to backfill it. Shipping the
+  wrong company's mark was judged worse than shipping none; re-run backfill-icons.py once
+  a real asset is available.
 tags:
 - Energy
 - Australia
@@ -50,6 +58,15 @@ tags:
 - Renewables
 created: '2026-07-27'
 modified: '2026-07-27'
+enrichment:
+  round: '2026-07-27'
+  note: >-
+    Round 2 enrichment. Contract discovery re-run against every host: no additional
+    OpenAPI, no GraphQL, no MCP server, no AsyncAPI, no webhooks, no /llms.txt, no
+    /.well-known document, no security.txt, no trust center, no first-party SDK, no CLI,
+    no UI components, no sandbox and no Postman collection exist. All recorded as
+    verified negatives. The artifacts added are derived from the two harvested Consumer
+    Data Standards contracts and from the live public brand path.
 specificationVersion: '0.19'
 apis:
 - aid: energyaustralia:energyaustralia-cdr-energy-plans-api
@@ -83,6 +100,17 @@ apis:
     url: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
   - type: APIStandards
     url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: Overlay
+    url: overlays/energyaustralia-cds-energy-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: AgentSkill
+    name: Compare EnergyAustralia energy plans
+    url: skills/energyaustralia-compare-energy-plans.md
 - aid: energyaustralia:energyaustralia-cdr-discovery-api
   name: EnergyAustralia CDR Discovery Status API
   description: >-
@@ -107,6 +135,13 @@ apis:
     url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
   - type: APIStandards
     url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: Overlay
+    url: overlays/energyaustralia-cds-common-api-overlay.yaml
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: AgentSkill
+    name: Check EnergyAustralia CDR status and scheduled outages
+    url: skills/energyaustralia-check-status-and-outages.md
 - aid: energyaustralia:energyaustralia-cdr-energy-consumer-data-api
   name: EnergyAustralia CDR Energy Consumer Data Sharing API
   description: >-
@@ -145,17 +180,158 @@ apis:
     url: https://consumerdatastandardsaustralia.github.io/standards/
   - type: CDRRegister
     url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: Overlay
+    url: overlays/energyaustralia-cds-energy-api-overlay.yaml
+  - type: AgentSkill
+    name: Read EnergyAustralia customer accounts and billing under CDR consent
+    url: skills/energyaustralia-consumer-data-sharing.md
+  - type: AgentSkill
+    name: Read EnergyAustralia electricity service points, interval usage and DER data
+    url: skills/energyaustralia-usage-and-der.md
 common:
+- type: AgenticAccess
+  url: agentic-access/energyaustralia-agentic-access.yml
+- type: DomainSecurity
+  url: security/energyaustralia-domain-security.yml
+- type: Authentication
+  url: authentication/energyaustralia-authentication.yml
+- type: OAuthScopes
+  url: scopes/energyaustralia-scopes.yml
+- type: Conventions
+  url: conventions/energyaustralia-conventions.yml
+- type: ErrorCatalog
+  url: errors/energyaustralia-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/energyaustralia-lifecycle.yml
+- type: StatusPage
+  url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+- type: Deprecation
+  url: https://consumerdatastandardsaustralia.github.io/standards/#future-dated-obligations
+- type: ChangeLog
+  url: changelog/energyaustralia-changelog.yml
+- type: Conformance
+  url: conformance/energyaustralia-conformance.yml
+- type: DataModel
+  url: data-model/energyaustralia-data-model.yml
+- type: Packages
+  url: packages/energyaustralia-packages.yml
+- type: Overlay
+  url: overlays/energyaustralia-cds-energy-api-overlay.yaml
+- type: Overlay
+  url: overlays/energyaustralia-cds-common-api-overlay.yaml
+- type: ToolCrosswalk
+  url: mcp/energyaustralia-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/energyaustralia-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Website
   url: https://www.energyaustralia.com.au/
 - type: ConsumerDataRight
   url: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
 - type: APIStandards
   url: https://consumerdatastandardsaustralia.github.io/standards/
+- type: APIReference
+  url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+- type: Documentation
+  url: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
 - type: CDRRegister
   url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+- type: Support
+  url: https://www.energyaustralia.com.au/home/help-and-support
+- type: SignUp
+  url: https://www.energyaustralia.com.au/myaccount-login
+- type: Pricing
+  url: https://www.energyaustralia.com.au/home/electricity-and-gas/plans
+- type: TermsOfService
+  url: https://www.energyaustralia.com.au/energyaustralia-website-policy
+- type: PrivacyPolicy
+  url: https://www.energyaustralia.com.au/sites/default/files/2024-07/Privacy%20Policy.pdf
 - type: LinkedIn
   url: https://www.linkedin.com/company/energyaustralia
+notWired:
+  note: >-
+    Canonical pointers deliberately NOT emitted, with the reason. Recorded so a later
+    round does not re-litigate them, and so the absence reads as a finding rather than an
+    oversight.
+  pointers:
+  - type: SDKs
+    reason: >-
+      No first-party client library exists in any registry. The only libraries that
+      target this contract are Data Standards Body ecosystem tooling
+      (@cds-au/holder-sdk, @cds-au/testdata), catalogued in packages/ as official:false.
+  - type: MCPServer
+    reason: >-
+      No hosted or remote MCP server exists. mcp/energyaustralia-mcp.yml is a CANDIDATE
+      manifest derived one-tool-per-operation from the OpenAPI, with url:null and
+      published:false; wiring MCPServer would claim a server that does not exist.
+  - type: Idempotency
+    reason: >-
+      The API defines no idempotency key and needs none — every operation is a read. The
+      five POST operations carry id lists in the body and are queries, not mutations.
+  - type: Security
+    reason: >-
+      probe-security-programs.py returned vdp=none. No security.txt on any host, no
+      responsible-disclosure page, no bug bounty. The CDR ecosystem has its own
+      disclosure policy but that is the regulator's, not EnergyAustralia's.
+  - type: Compliance
+    reason: >-
+      No published certification or compliance program. conformance/ asserts standards
+      conformance only, which does not earn a Compliance claim.
+  - type: TrustCenter
+    reason: probe-security-programs.py returned trust=none.
+  - type: WellKnown
+    reason: >-
+      Every /.well-known/ path on every host returned 404 (or was Akamai-blocked). The
+      negative result is recorded in well-known/energyaustralia-well-known.yml.
+  - type: SecurityTxt
+    reason: No RFC 9116 security.txt on any host.
+  - type: AsyncAPI
+    reason: >-
+      The CDR Energy and Common APIs define no event, streaming or webhook surface. Not a
+      gap — the regime is request/response only, so this is N/A rather than missing.
+  - type: Webhooks
+    reason: No webhook surface exists.
+  - type: GitHubOrganization
+    reason: >-
+      github.com/EnergyAustralia exists but is an unrelated vanity org — no metadata, one
+      2019 JavaScript micro-library. Not the gentailer.
+  - type: Postman
+    reason: >-
+      No EnergyAustralia Postman collection or workspace. The DSB publishes an
+      ecosystem-wide schema-test workspace, which is not this provider's.
+  - type: DeveloperPortal
+    reason: >-
+      No developer portal exists. developer./developers./docs./data. subdomains are all
+      NXDOMAIN; api.energyaustralia.com.au is a closed MuleSoft gateway returning 403.
+  - type: GettingStarted
+    reason: No quickstart or getting-started page — there is no developer product.
+  - type: Blog
+    reason: No developer or engineering blog.
+  - type: Roadmap
+    reason: No public roadmap.
+  - type: Sandbox
+    reason: >-
+      EnergyAustralia publishes no sandbox or test credentials. The CDR Mock Data Holder
+      is ecosystem tooling published by the DSB, noted in packages/.
+  - type: CLI
+    reason: No first-party CLI.
+  - type: Components
+    reason: No embeddable or client-side UI components.
+  - type: DeclineCodes
+    reason: Not a payments or authorisation provider.
+  - type: Protobuf
+    reason: No .proto published in any org or on buf.build.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

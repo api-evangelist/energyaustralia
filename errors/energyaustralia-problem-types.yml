@@ -1,0 +1,177 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Derived from the 4xx responses declared across
+  openapi/energyaustralia-cds-energy-api-openapi.yml and
+  openapi/energyaustralia-cds-common-api-openapi.yml, then enriched with the normative
+  URN codes from the Consumer Data Standards error reference.
+docs: https://consumerdatastandardsaustralia.github.io/standards/#error-codes
+format: cds-error-list
+format_note: >-
+  NOT RFC 9457 Problem Details. The CDR Data Standards define their own error envelope:
+  a JSON object with a required top-level `errors` array, each element carrying required
+  `code` (a URN), `title` and `detail`, plus an optional `meta` object used to carry an
+  application-specific error code alongside the standard CDR URN it extends. Media type
+  is `application/json`, not `application/problem+json`.
+envelope:
+  schema: ResponseErrorListV2
+  media_type: application/json
+  shape:
+    errors:
+      - code: string (required) — the CDR error code URN, or an application-specific code
+        title: string (required) — short human-readable summary, stable per code
+        detail: string (required) — human-readable explanation for this occurrence
+        meta: object (conditional) — carries `urn` when `code` is application-specific
+  correlation_header: x-fapi-interaction-id
+  correlation_note: >-
+    Every error response echoes or mints an RFC 4122 UUID in the x-fapi-interaction-id
+    response header. Verified live on the public surface 2026-07-27.
+status_coverage:
+  '400': 27 operations
+  '404': 10 operations
+  '406': 27 operations
+  '422': 16 operations
+problems:
+- status: 400
+  code: urn:au-cds:error:cds-all:Field/Invalid
+  title: Invalid Field
+  detail_convention: The parameter name of the invalid field.
+  remediation: >-
+    Correct the URL or body parameter to the type and constraints declared in the
+    interface contract.
+  operations: 27
+  source: openapi (all operations)
+- status: 400
+  code: urn:au-cds:error:cds-all:Field/Missing
+  title: Missing Required Field
+  detail_convention: The parameter name of the missing field.
+  remediation: Supply the mandatory query parameter or request-body field.
+  operations: 27
+  source: openapi (all operations)
+- status: 400
+  code: urn:au-cds:error:cds-all:Field/InvalidDateTime
+  title: Invalid Date
+  detail_convention: The parameter name of the invalid date field.
+  remediation: >-
+    Supply a DateTimeString / DateString / TimeString in the expected range — several
+    energy endpoints expect a past or bounded date window.
+  operations: 10
+  source: openapi (usage, billing, invoice and DER date-filtered operations)
+- status: 400
+  code: urn:au-cds:error:cds-all:Field/InvalidPageSize
+  title: Invalid Page Size
+  detail_convention: null
+  remediation: Request page-size <= 1000, the maximum allowed by the CDR Data Standards.
+  operations: 16
+  source: openapi (all paginated collection operations)
+- status: 400
+  code: urn:au-cds:error:cds-all:Header/InvalidVersion
+  title: Invalid Version
+  detail_convention: null
+  remediation: >-
+    Set x-v (and x-min-v when used) to a positive integer. Non-integer or non-positive
+    values fail here rather than at 406.
+  operations: 27
+  source: openapi (all operations)
+- status: 404
+  code: urn:au-cds:error:cds-all:Resource/Invalid
+  title: Invalid Resource
+  detail_convention: The resource ID being requested.
+  remediation: >-
+    The identifier is permanently unavailable; no retry will succeed. Applies when the
+    id is in the URI path.
+  operations: 1
+  source: openapi (getEnergyPlanDetail)
+- status: 404
+  code: urn:au-cds:error:cds-energy:Authorisation/InvalidEnergyAccount
+  title: Invalid Energy Account
+  detail_convention: The accountId being requested.
+  remediation: Permanently unavailable account id in the URI path; do not retry.
+  operations: 6
+  source: openapi (per-account operations)
+- status: 404
+  code: urn:au-cds:error:cds-energy:Authorisation/UnavailableEnergyAccount
+  title: Unavailable Energy Account
+  detail_convention: The accountId being requested.
+  remediation: Temporarily unavailable account id in the URI path; a later retry may succeed.
+  operations: 6
+  source: openapi (per-account operations)
+- status: 404
+  code: urn:au-cds:error:cds-energy:Authorisation/InvalidServicePoint
+  title: Invalid Service Point
+  detail_convention: The servicePointId (NMI) being requested.
+  remediation: Permanently unavailable service point in the URI path; do not retry.
+  operations: 3
+  source: openapi (per-service-point operations)
+- status: 404
+  code: urn:au-cds:error:cds-energy:Authorisation/UnavailableServicePoint
+  title: Unavailable Service Point
+  detail_convention: The servicePointId (NMI) being requested.
+  remediation: Temporarily unavailable service point; a later retry may succeed.
+  operations: 3
+  source: openapi (per-service-point operations)
+- status: 406
+  code: urn:au-cds:error:cds-all:Header/UnsupportedVersion
+  title: Unsupported Version
+  detail_convention: May include the minimum and maximum versions the data holder supports.
+  remediation: >-
+    Negotiate down. Verified live: GET /energy/plans/{planId} returns 406 at x-v 1 with
+    min=3 and 200 at x-v 3 — per-endpoint versioning, not a single API version.
+  operations: 27
+  source: openapi (all operations)
+- status: 422
+  code: urn:au-cds:error:cds-all:Field/InvalidPage
+  title: Invalid Page
+  detail_convention: The maximum number of pages available.
+  remediation: Request a page within the available range.
+  operations: 16
+  source: openapi (all paginated collection operations)
+- status: 422
+  code: urn:au-cds:error:cds-energy:Authorisation/InvalidEnergyAccount
+  title: Invalid Energy Account
+  detail_convention: The accountId supplied in the request body.
+  remediation: >-
+    The POST "for specific accounts" operations return 422 rather than 404 because the
+    id arrives in the request body.
+  operations: 3
+  source: openapi (listEnergyAccountBalancesSpecificAccounts, listEnergyInvoicesForSpecificAccounts, listEnergyAccountBillingForSpecificAccounts)
+- status: 422
+  code: urn:au-cds:error:cds-energy:Authorisation/UnavailableEnergyAccount
+  title: Unavailable Energy Account
+  detail_convention: The accountId supplied in the request body.
+  remediation: Temporarily unavailable; a later retry may succeed.
+  operations: 3
+  source: openapi (POST bulk-by-id operations)
+- status: 422
+  code: urn:au-cds:error:cds-energy:Authorisation/InvalidServicePoint
+  title: Invalid Service Point
+  detail_convention: The servicePointId supplied in the request body.
+  remediation: Permanently unavailable service point id in the request body.
+  operations: 2
+  source: openapi (listElectricityUsageForServicePoints, listElectricityDERForSpecificServicePoints)
+- status: 422
+  code: urn:au-cds:error:cds-energy:Authorisation/UnavailableServicePoint
+  title: Unavailable Service Point
+  detail_convention: The servicePointId supplied in the request body.
+  remediation: Temporarily unavailable; a later retry may succeed.
+  operations: 2
+  source: openapi (POST by-service-point operations)
+ecosystem_codes_not_in_spec:
+  note: >-
+    Normative CDR codes that apply to the authenticated EnergyAustralia surface but are
+    not enumerated per-operation in the OpenAPI response descriptions.
+  codes:
+  - {status: '401', code: 'urn:au-cds:error:cds-all:Authorisation/InvalidToken', title: Invalid Bearer Token}
+  - {status: '403', code: 'urn:au-cds:error:cds-all:Authorisation/AdrStatusNotActive', title: ADR Status Is Not Active}
+  - {status: '403', code: 'urn:au-cds:error:cds-all:Authorisation/RevokedConsent', title: Consent Is Revoked}
+  - {status: '403', code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: Consent Is Invalid}
+  - {status: '404', code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: Resource Not Found}
+  - {status: '404', code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: Resource Not Implemented}
+  - {status: '429', code: 'urn:au-cds:error:cds-all:GeneralError/Expected', title: Too Many Requests (throttling; Retry-After returned)}
+  - {status: '4xx', code: 'urn:au-cds:error:cds-all:GeneralError/Expected', title: Expected Error Encountered}
+  - {status: '5xx', code: 'urn:au-cds:error:cds-all:GeneralError/Unexpected', title: Unexpected Error Encountered}
+  - {status: '503', code: 'urn:au-cds:error:cds-all:Service/Unavailable', title: Service Unavailable}
+cross_references:
+  conventions: conventions/energyaustralia-conventions.yml
+  authentication: authentication/energyaustralia-authentication.yml
+  lifecycle: lifecycle/energyaustralia-lifecycle.yml

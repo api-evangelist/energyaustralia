@@ -1,0 +1,67 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  npm registry, GitHub org lookups and docs search on 2026-07-27
+first_party_packages: 0
+note: >-
+  EnergyAustralia publishes NO client libraries in any language and NO first-party SDK.
+  Registry and org searches all came back empty; there is no developer product to ship an
+  SDK for. Because there is no official client library, this repo deliberately does NOT
+  wire an `SDKs` pointer — only `Packages`, pointing at this negative-plus-ecosystem
+  record.
+packages: []
+provider_github:
+  org_probed: https://github.com/EnergyAustralia
+  status: 200
+  is_company: false
+  evidence: >-
+    The github.com/EnergyAustralia org exists but has no name, description, blog,
+    location or email set, holds exactly one public repo — `eqio`, a JavaScript
+    element-query micro-library last pushed 2019-06-16 — and has nothing to do with the
+    Australian gentailer. Treated as an unrelated vanity org: no
+    `GitHubOrganization` pointer is wired for this provider.
+registries_probed:
+  - {registry: npm, query: energyaustralia, first_party_hits: 0}
+  - {registry: npm, query: cds-au, first_party_hits: 0, ecosystem_hits: 2}
+  - {registry: github, query: 'org:EnergyAustralia', first_party_hits: 0}
+  - {registry: 'MuleSoft Anypoint Exchange', url: 'https://anypoint.mulesoft.com/exchange/portals/energyaustralia/', status: 404}
+ecosystem_packages:
+  note: >-
+    These are the real, published client-side libraries an integrator would actually use
+    against EnergyAustralia's CDR surfaces. They are maintained by the Data Standards
+    Body for the whole CDR ecosystem — they are NOT EnergyAustralia software, so every
+    entry is `official: false` with the publisher named. Recorded because they are the
+    only tooling that exists for this contract, not to claim SDK coverage.
+  publisher: Data Standards Body (Australian Treasury)
+  packages:
+  - language: javascript
+    registry: npm
+    name: '@cds-au/holder-sdk'
+    version: 2.3.0
+    url: https://www.npmjs.com/package/@cds-au/holder-sdk
+    install: npm install @cds-au/holder-sdk
+    official: false
+    first_party: false
+    role: >-
+      NodeJS middleware handling CDS boilerplate — error generation, header validation
+      and version negotiation in line with the Consumer Data Standards. Data-holder side.
+    source: https://github.com/ConsumerDataStandardsAustralia/js-holder-sdk
+  - language: javascript
+    registry: npm
+    name: '@cds-au/testdata'
+    version: 1.8.0
+    url: https://www.npmjs.com/package/@cds-au/testdata
+    install: npm install @cds-au/testdata
+    official: false
+    first_party: false
+    role: >-
+      Generates manufactured test data conforming to the Consumer Data Standards, for
+      development and conformance testing against the CDR contracts.
+    source: https://github.com/ConsumerDataStandardsAustralia/testdata-cli
+  reference_implementations:
+  - {name: mock-data-holder-java, url: 'https://github.com/ConsumerDataStandardsAustralia/mock-data-holder-java', language: java, role: CDS software artefacts and a mock data holder in Java}
+  - {name: mock-data-holder-nodejs, url: 'https://github.com/ConsumerDataStandardsAustralia/mock-data-holder-nodejs', language: typescript, role: NodeJS mock data holder}
+  - {name: mock-register, url: 'https://github.com/ConsumerDataStandardsAustralia/mock-register', language: csharp, role: Mock CDR Register for local development}
+  - {name: ADR-Gateway, url: 'https://github.com/ConsumerDataStandardsAustralia/ADR-Gateway', language: typescript, role: Reference Data Recipient gateway — the consumer side of this contract}
+  - {name: accc-authorisation-server, url: 'https://github.com/ConsumerDataStandardsAustralia/accc-authorisation-server', language: csharp, role: OIDC + FAPI 1.0 Advanced compliant identity provider for CDR}
+  - {name: dsb-postman, url: 'https://github.com/ConsumerDataStandardsAustralia/dsb-postman', role: 'Repository behind the public DSB-SCHEMA-TESTS Postman workspace — ecosystem-wide, not an EnergyAustralia collection'}

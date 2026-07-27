@@ -1,0 +1,151 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Consumer Data Standards 1.36.0 (headers, pagination, error and NFR sections) plus live
+  probes of https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1 on 2026-07-27,
+  and the request/response shapes in openapi/.
+docs: https://consumerdatastandardsaustralia.github.io/standards/#http-headers
+note: >-
+  Cross-cutting request/response semantics for every EnergyAustralia CDR surface. These
+  are ecosystem-wide Consumer Data Standards conventions — EnergyAustralia publishes no
+  proprietary API conventions of its own — but they are the real, binding contract for
+  every call made against its brand path and its registered publicBaseUri.
+authentication:
+  style: >-
+    Two-tier. Product Reference Data and discovery endpoints are entirely
+    unauthenticated. Consumer data endpoints require mTLS with CDR Register-issued
+    certificates plus a FAPI 1.0 Advanced OAuth2/OIDC consent-scoped access token.
+  reference: authentication/energyaustralia-authentication.yml
+idempotency:
+  supported: false
+  note: >-
+    The CDR Energy and Common APIs expose no write operations and define no idempotency
+    key. Every operation is a read: 22 are GET, and the 5 POST operations
+    (listElectricityUsageForServicePoints, listElectricityDERForSpecificServicePoints,
+    listEnergyAccountBalancesSpecificAccounts, listEnergyInvoicesForSpecificAccounts,
+    listEnergyAccountBillingForSpecificAccounts) use POST only to carry a long list of
+    accountIds / servicePointIds in the request body — they are queries, not mutations,
+    and are naturally idempotent. There is no Idempotency-Key header and none is needed.
+versioning:
+  scheme: per-endpoint payload versioning via request header
+  request_headers:
+  - name: x-v
+    required: true
+    description: >-
+      Requested payload version, a positive integer. REQUIRED on every request. Note
+      this is per ENDPOINT, not per API — /energy/plans is at v1 while
+      /energy/plans/{planId} is at v3.
+  - name: x-min-v
+    required: false
+    description: >-
+      Minimum acceptable payload version. The data holder responds with the highest
+      supported version between x-min-v and x-v.
+  response_headers:
+  - name: x-v
+    description: The payload version actually returned.
+  negotiation: >-
+    If no requested version is supported the endpoint MUST return HTTP 406 with
+    urn:au-cds:error:cds-all:Header/UnsupportedVersion. Verified live: /energy/plans/
+    ENE831725MRE15@EME returned 406 at x-v 1 and 200 at x-v 3 on 2026-07-27.
+  uri_version: cds-au/v1
+  uri_version_note: >-
+    The /cds-au/v1 path segment is the CDR standards family version, not the payload
+    version — it has not changed since the regime began.
+  current_standard: Consumer Data Standards 1.36.0
+  reference: lifecycle/energyaustralia-lifecycle.yml
+request_tracing:
+  header: x-fapi-interaction-id
+  direction: request (optional) and response (always)
+  format: RFC 4122 UUID
+  behaviour: >-
+    If the client supplies x-fapi-interaction-id the data holder MUST play it back in
+    the response. If not supplied the holder mints one. Verified live: the public
+    /energy/plans response carried x-fapi-interaction-id
+    81c6c38d-9be7-44f1-a766-8230044cec05 on 2026-07-27.
+  additional_context_headers:
+  - {name: x-fapi-auth-date, applies_to: authenticated, description: Time the customer last logged in to the ADR software product.}
+  - {name: x-fapi-customer-ip-address, applies_to: authenticated, description: Presence signals a customer-present call.}
+  - {name: x-cds-client-headers, applies_to: authenticated, description: Base64-encoded original client headers including User-Agent. Mandatory for customer-present calls.}
+pagination:
+  style: page-number
+  applies_to: 16 collection operations
+  request_parameters:
+  - {name: page, in: query, type: PositiveInteger, note: 1-based page number; no default declared in the spec}
+  - {name: page-size, in: query, type: PositiveInteger, max: 1000, note: 'maximum 1000 is enforced by the standards (Field/InvalidPageSize); no default declared in the spec'}
+  response_fields:
+    meta:
+    - {field: meta.totalRecords, description: Total records across all pages}
+    - {field: meta.totalPages, description: Total number of pages}
+    links:
+    - {field: links.self, description: Link to the current page}
+    - {field: links.first, description: Link to the first page}
+    - {field: links.prev, description: Link to the previous page (absent on page 1)}
+    - {field: links.next, description: Link to the next page (absent on last page)}
+    - {field: links.last, description: Link to the last page}
+  schemas: [Meta, MetaPaginated, Links, LinksPaginated]
+  errors:
+  - {status: 400, code: 'urn:au-cds:error:cds-all:Field/InvalidPageSize', when: page-size > 1000}
+  - {status: 422, code: 'urn:au-cds:error:cds-all:Field/InvalidPage', when: page beyond the available range}
+  evidence: >-
+    GET /energy/plans returned meta.totalRecords 1122 for the EnergyAustralia brand;
+    ?fuelType=GAS returned meta.totalRecords 265 (2026-07-27).
+field_expansion:
+  supported: false
+  note: >-
+    No sparse-fieldset or expansion parameter. Detail is modelled as separate
+    operations and payload versions instead — the basic/detail split is expressed as
+    distinct endpoints (listEnergyAccounts vs getEnergyAccountDetail,
+    listElectricityServicePoints vs getElectricityServicePointDetail) and as distinct
+    scopes (…basic:read vs …detail:read).
+filtering:
+  note: >-
+    Query filters are per-endpoint rather than a generic filter grammar. Confirmed from
+    the spec for the public /energy/plans operation: type (STANDING|MARKET|REGULATED|ALL,
+    default ALL), fuelType (ELECTRICITY|GAS|DUAL|ALL, default ALL), effective
+    (CURRENT|FUTURE|ALL, default CURRENT), updated-since and brand. Usage, billing and
+    invoice endpoints use newest-date / oldest-date windows.
+metadata:
+  custom_metadata: false
+  note: >-
+    There is no consumer-writable metadata surface — the API is read-only. `meta` on
+    responses is reserved for pagination counts, and `meta` on errors is reserved for
+    carrying an application-specific code alongside the standard CDR URN.
+error_envelope:
+  format: cds-error-list
+  media_type: application/json
+  rfc9457: false
+  shape: '{ "errors": [ { "code": "<urn>", "title": "...", "detail": "...", "meta": {} } ] }'
+  reference: errors/energyaustralia-problem-types.yml
+rate_limiting:
+  documented: true
+  status: 429
+  retry_after: true
+  evidence: >-
+    The live public response advertises `access-control-expose-headers: x-v, Retry-After,
+    x-fapi-interaction-id` — Retry-After is explicitly exposed to browser clients,
+    confirming the throttling contract is active on the gateway (probed 2026-07-27).
+  note: >-
+    The CDR Data Standards set traffic thresholds in the Non-Functional Requirements
+    section; the specific per-session and per-recipient TPS values are set by the
+    standards rather than by EnergyAustralia and are not restated here.
+cors:
+  enabled: true
+  evidence: 'access-control-allow-origin: * on the public product data surface (2026-07-27)'
+  exposed_headers: [x-v, Retry-After, x-fapi-interaction-id]
+data_types:
+  note: >-
+    CDS defines its own scalar vocabulary, carried in the specs as `x-cds-type`.
+  types:
+  - {type: AmountString, description: Decimal amount as a string, min 2 decimal places}
+  - {type: DateString, description: RFC 3339 full-date}
+  - {type: DateTimeString, description: RFC 3339 date-time}
+  - {type: PositiveInteger, description: Integer > 0}
+  - {type: ExternalRef, description: Value defined by an external standard (e.g. ISO 8601 durations)}
+  - {type: Base64, description: Base64-encoded string}
+  - {type: NaturalNumber, description: Integer >= 0}
+cross_references:
+  errors: errors/energyaustralia-problem-types.yml
+  lifecycle: lifecycle/energyaustralia-lifecycle.yml
+  authentication: authentication/energyaustralia-authentication.yml
+  scopes: scopes/energyaustralia-scopes.yml
+  conformance: conformance/energyaustralia-conformance.yml

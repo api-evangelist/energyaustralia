@@ -1,0 +1,78 @@
+generated: '2026-07-27'
+method: generated
+source: >-
+  Grounded in openapi/energyaustralia-cds-energy-api-openapi.yml and
+  openapi/energyaustralia-cds-common-api-openapi.yml. Every operationId referenced in every
+  skill was verified to exist verbatim in the referenced spec.
+note: >-
+  EnergyAustralia publishes no AGENTS.md, no skill files and no agent guidance — a search
+  of its surface returned nothing, so these are generated. Two of the four skills are
+  runnable by anyone today against the public AER gateway; the other two describe flows
+  that require ACCC accreditation and are marked `gated: true` so an agent does not
+  attempt them.
+skills:
+- file: energyaustralia-compare-energy-plans.md
+  name: Compare EnergyAustralia energy plans
+  api: openapi/energyaustralia-cds-energy-api-openapi.yml
+  base_url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  auth: none
+  gated: false
+  operations: [listEnergyPlans, getEnergyPlanDetail]
+- file: energyaustralia-check-status-and-outages.md
+  name: Check EnergyAustralia CDR status and scheduled outages
+  api: openapi/energyaustralia-cds-common-api-openapi.yml
+  base_url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  auth: none
+  gated: false
+  operations: [getStatus, getOutages]
+- file: energyaustralia-consumer-data-sharing.md
+  name: Read EnergyAustralia customer accounts and billing under CDR consent
+  api: openapi/energyaustralia-cds-energy-api-openapi.yml
+  base_url: https://authncdr.energyaustralia.com.au
+  auth: mTLS + OAuth2/OIDC (FAPI 1.0 Advanced)
+  gated: true
+  operations:
+  - getCustomer
+  - getCustomerDetail
+  - listEnergyAccounts
+  - getEnergyAccountDetail
+  - getEnergyAccountBalance
+  - listEnergyAccountBalancesBulk
+  - listEnergyAccountBalancesSpecificAccounts
+  - getEnergyAccountInvoices
+  - listEnergyAccountInvoicesBulk
+  - listEnergyInvoicesForSpecificAccounts
+  - getBillingForEnergyAccount
+  - listEnergyAccountBillingBulk
+  - listEnergyAccountBillingForSpecificAccounts
+  - getEnergyAccountPaymentSchedule
+  - getEnergyAccountConcessions
+- file: energyaustralia-usage-and-der.md
+  name: Read EnergyAustralia electricity service points, interval usage and DER data
+  api: openapi/energyaustralia-cds-energy-api-openapi.yml
+  base_url: https://authncdr.energyaustralia.com.au
+  auth: mTLS + OAuth2/OIDC (FAPI 1.0 Advanced)
+  gated: true
+  operations:
+  - getEnergyAccountDetail
+  - listElectricityServicePoints
+  - getElectricityServicePointDetail
+  - getElectricityServicePointUsage
+  - listElectricityUsageBulk
+  - listElectricityUsageForServicePoints
+  - getElectricityDERForServicePoint
+  - listElectricityDERBulk
+  - listElectricityDERForSpecificServicePoints
+coverage:
+  operations_total: 27
+  operations_covered: 27
+  uncovered: []
+  verified: >-
+    Every operationId listed in every skill frontmatter and referenced inline was checked
+    against both harvested specs on 2026-07-27; all 27 operations are reachable through
+    one of the four skills and no invented operationId appears anywhere.
+cross_references:
+  conventions: conventions/energyaustralia-conventions.yml
+  errors: errors/energyaustralia-problem-types.yml
+  scopes: scopes/energyaustralia-scopes.yml
+  authentication: authentication/energyaustralia-authentication.yml

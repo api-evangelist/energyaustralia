@@ -1,0 +1,66 @@
+# EnergyAustralia
+
+> EnergyAustralia is one of Australia's "big three" gentailers — a vertically integrated
+> electricity and gas business owned by Hong Kong's CLP Group, headquartered in Melbourne,
+> generating from Yallourn, Mount Piper and Hallett alongside wind assets, and retailing to
+> more than 1.7 million residential and business customers across Victoria, New South Wales,
+> Queensland, South Australia and the ACT. Its entire API footprint exists because of the
+> Australian Consumer Data Right, not because of a product strategy.
+
+## What actually exists
+
+EnergyAustralia publishes no developer portal, no proprietary OpenAPI, no SDK, no MCP server,
+no sandbox, and no open market or generation data. There is no route from "developer signs up"
+to "reads EnergyAustralia data". Two distinct surfaces carry its name:
+
+1. **Public product reference data** — live, unauthenticated, and hosted by the Australian
+   Energy Regulator, not by EnergyAustralia. In CDR banking each bank stands up its own public
+   product endpoint; in CDR energy the AER is the designated data holder for product data and
+   serves every retailer from one gateway on a per-brand path. Verified 2026-07-27: HTTP 200,
+   1,122 published EnergyAustralia plans (265 of them GAS).
+2. **Consumer data sharing** — mandated, registered, standards-bound and live, but reachable
+   only by an ACCC-accredited Data Recipient holding an individual customer's active consent,
+   over mutual TLS with CDR Register-issued certificates and a FAPI 1.0 Advanced authorisation.
+   The registered host answered HTTP 404 to every standards path probed anonymously.
+
+Open on plans, closed on everything else.
+
+## APIs
+
+- [EnergyAustralia CDR Energy Plans API](https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans): Public, unauthenticated Consumer Data Right energy Product Reference Data for the EnergyAustralia brand. Requires an `x-v` header. `GET /energy/plans` answers at x-v 1; `GET /energy/plans/{planId}` requires x-v 3.
+- [EnergyAustralia CDR Discovery Status API](https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status): Public health-check and scheduled-outage endpoints for the brand path. The only operational-health contract published under the EnergyAustralia name.
+- [EnergyAustralia CDR Energy Consumer Data Sharing API](https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right): Accredited-only. Energy accounts, invoices, billing, balances, concessions, payment schedules, electricity service points, interval usage and DER register data. Base URI https://authncdr.energyaustralia.com.au as published in the ACCC CDR Register.
+
+## Specs
+
+- [CDR Energy API 1.36.0](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/openapi/energyaustralia-cds-energy-api-openapi.yml): OpenAPI 3.0.3, 18 paths, 23 operations. The shared Data Standards Body contract, saved verbatim — not an EnergyAustralia-authored spec.
+- [CDR Common API 1.36.0](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/openapi/energyaustralia-cds-common-api-openapi.yml): OpenAPI 3.0.3, 4 paths, 4 operations. Customer and discovery endpoints.
+
+## Artifacts
+
+- [Authentication profile](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/authentication/energyaustralia-authentication.yml): Three surfaces — two unauthenticated, one behind mTLS + OAuth2/OIDC FAPI 1.0 Advanced.
+- [OAuth scopes](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/scopes/energyaustralia-scopes.yml): 11 CDR scopes derived from the per-operation `x-scopes` extension, plus `openid`.
+- [API conventions](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/conventions/energyaustralia-conventions.yml): `x-v` per-endpoint version negotiation, `x-fapi-interaction-id` tracing, page/page-size pagination, 429 + Retry-After, CORS.
+- [Error catalog](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/errors/energyaustralia-problem-types.yml): 16 spec-declared CDR error types with `urn:au-cds:error:` codes. Not RFC 9457.
+- [Lifecycle](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/lifecycle/energyaustralia-lifecycle.yml): Per-endpoint payload versioning, DSB Future Dated Obligations deprecation, machine-readable status endpoint.
+- [Changelog](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/changelog/energyaustralia-changelog.yml): Consumer Data Standards release history — the dated change record that governs these contracts.
+- [Conformance](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/conformance/energyaustralia-conformance.yml): CDR/CDS, OAuth2, OIDC, FAPI 1.0 Advanced, mTLS. No Green Button, no OpenADR, no IEEE 2030.5, no IEC CIM, no OCPP/OCPI.
+- [Data model](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/data-model/energyaustralia-data-model.yml): Entity graph across plans, accounts, service points (NMIs), usage, DER, billing.
+- [Packages](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/packages/energyaustralia-packages.yml): Zero first-party SDKs. Ecosystem tooling published by the Data Standards Body only.
+- [Domain security](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/security/energyaustralia-domain-security.yml): TLS 1.3, DNSSEC enabled on energyaustralia.com.au, SPF and DMARC at p=reject, no CAA, no HSTS on www.
+- [Agentic access](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/agentic-access/energyaustralia-agentic-access.yml): Recommended `x-agentic-access` contracts for all 27 operations.
+- [Agent skills](https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/skills/_index.yml): Packaged operating instructions grounded in real operationIds.
+
+## Getting access
+
+- [ACCC CDR accreditation](https://www.cdr.gov.au/): The only route to consumer data. Apply to the ACCC, pass accreditation (or use an accredited intermediary / CDR representative), onboard to the CDR Register, obtain transport and signing certificates, register a software product, then obtain per-consumer consent.
+- [Consumer Data Standards](https://consumerdatastandardsaustralia.github.io/standards/): The normative contract, security profile, error codes and non-functional requirements.
+- [AER Energy Made Easy plan data FAQ](https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data): How the public product data gateway works.
+- [ACCC CDR Register brand summary](https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary): Authoritative record that EnergyAustralia is a live registered energy data holder (dataHolderBrandId 1cc7833a-b834-ed11-a832-000d3a8830d6).
+
+## Company
+
+- [EnergyAustralia](https://www.energyaustralia.com.au/): Corporate site. Note: Akamai bot management resets the HTTP/2 stream for non-browser clients, so the corporate site is not machine-readable.
+- [Consumer Data Right FAQ](https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right): EnergyAustralia's own CDR customer explainer. Documents no API and offers no developer access.
+- [Help and support](https://www.energyaustralia.com.au/home/help-and-support): Consumer support. There is no developer support channel.
+- [Electricity and gas plans](https://www.energyaustralia.com.au/home/electricity-and-gas/plans): The retail plans whose reference data the public API serves.

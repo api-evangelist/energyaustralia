@@ -1,0 +1,245 @@
+generated: '2026-07-27'
+method: derived
+source: mcp/energyaustralia-mcp.yml + openapi/
+note: Binds every candidate MCP tool to its backing OpenAPI operationId. Because the tool set is derived
+  one-to-one from the harvested Consumer Data Standards contracts (there is no provider-published MCP
+  server to reconcile against), coverage is complete and every binding is high confidence by construction.
+  There are no MCP-only tools and no unbound REST operations. Recorded so that when EnergyAustralia or
+  an accredited intermediary does publish a server, the divergence is measurable against this baseline.
+surfaces:
+  openapi:
+  - openapi/energyaustralia-cds-energy-api-openapi.yml
+  - openapi/energyaustralia-cds-common-api-openapi.yml
+  graphql: null
+  graphql_note: No GraphQL surface. https://cdr.energymadeeasy.gov.au/graphql returned HTTP 404 on 2026-07-27.
+  mcp: null
+  mcp_note: No hosted MCP server; tools/list could not be called because no endpoint exists.
+  gated:
+  - https://authncdr.energyaustralia.com.au — accredited-only, mTLS required
+crosswalk:
+- tool: list_energy_plans
+  category: Energy Plans
+  rest:
+  - listEnergyPlans
+  binding: rest
+  confidence: high
+  access: public
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_energy_plan_detail
+  category: Energy Plans
+  rest:
+  - getEnergyPlanDetail
+  binding: rest
+  confidence: high
+  access: public
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_electricity_service_points
+  category: Electricity Service Points
+  rest:
+  - listElectricityServicePoints
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_electricity_service_point_detail
+  category: Electricity Service Points
+  rest:
+  - getElectricityServicePointDetail
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_electricity_service_point_usage
+  category: Electricity Usage
+  rest:
+  - getElectricityServicePointUsage
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_electricity_usage_bulk
+  category: Electricity Usage
+  rest:
+  - listElectricityUsageBulk
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_electricity_usage_for_service_points
+  category: Electricity Usage
+  rest:
+  - listElectricityUsageForServicePoints
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters + requestBody.
+- tool: get_electricity_d_e_r_for_service_point
+  category: Distributed Energy Resources
+  rest:
+  - getElectricityDERForServicePoint
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_electricity_d_e_r_bulk
+  category: Distributed Energy Resources
+  rest:
+  - listElectricityDERBulk
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_electricity_d_e_r_for_specific_service_points
+  category: Distributed Energy Resources
+  rest:
+  - listElectricityDERForSpecificServicePoints
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters + requestBody.
+- tool: list_energy_accounts
+  category: Energy Accounts
+  rest:
+  - listEnergyAccounts
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_energy_account_detail
+  category: Energy Accounts
+  rest:
+  - getEnergyAccountDetail
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_energy_account_payment_schedule
+  category: Energy Accounts
+  rest:
+  - getEnergyAccountPaymentSchedule
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_energy_account_concessions
+  category: Energy Accounts
+  rest:
+  - getEnergyAccountConcessions
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_energy_account_balance
+  category: Energy Account Balances
+  rest:
+  - getEnergyAccountBalance
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_account_balances_bulk
+  category: Energy Account Balances
+  rest:
+  - listEnergyAccountBalancesBulk
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_account_balances_specific_accounts
+  category: Energy Account Balances
+  rest:
+  - listEnergyAccountBalancesSpecificAccounts
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters + requestBody.
+- tool: get_energy_account_invoices
+  category: Energy Account Billing
+  rest:
+  - getEnergyAccountInvoices
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_account_invoices_bulk
+  category: Energy Account Billing
+  rest:
+  - listEnergyAccountInvoicesBulk
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_invoices_for_specific_accounts
+  category: Energy Account Billing
+  rest:
+  - listEnergyInvoicesForSpecificAccounts
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters + requestBody.
+- tool: get_billing_for_energy_account
+  category: Energy Account Billing
+  rest:
+  - getBillingForEnergyAccount
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_account_billing_bulk
+  category: Energy Account Billing
+  rest:
+  - listEnergyAccountBillingBulk
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: list_energy_account_billing_for_specific_accounts
+  category: Energy Account Billing
+  rest:
+  - listEnergyAccountBillingForSpecificAccounts
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters + requestBody.
+- tool: get_customer
+  category: Data Holder Customers
+  rest:
+  - getCustomer
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_customer_detail
+  category: Data Holder Customers
+  rest:
+  - getCustomerDetail
+  binding: rest
+  confidence: high
+  access: accredited-only
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_status
+  category: Data Holder Operations
+  rest:
+  - getStatus
+  binding: rest
+  confidence: high
+  access: public
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+- tool: get_outages
+  category: Data Holder Operations
+  rest:
+  - getOutages
+  binding: rest
+  confidence: high
+  access: public
+  note: Derived 1:1 from the OpenAPI operation; inputSchema = that operation parameters.
+mcp_only: []
+rest_only: []
+coverage:
+  tools_named: 27
+  tools_bound: 27
+  mcp_only: 0
+  rest_ops_total: 27
+  rest_ops_with_tool: 27
+  public_tools: 4
+  gated_tools: 23

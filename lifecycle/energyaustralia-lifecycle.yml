@@ -1,0 +1,111 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Consumer Data Standards 1.36.0 versioning and future-dated-obligations sections, the
+  ConsumerDataStandardsAustralia/standards GitHub release history, and live probes of
+  the EnergyAustralia CDR brand path on 2026-07-27.
+note: >-
+  EnergyAustralia publishes no lifecycle policy of its own. The versioning, deprecation
+  and retirement policy that binds its CDR surfaces is set by the Data Standards Body
+  under the ACCC's Consumer Data Right rules, and the operational-health surface is
+  served by the standards' own Discovery endpoints on the EnergyAustralia brand path.
+  Every field below records the policy that actually governs this API, with its
+  publisher named.
+versioning:
+  scheme: per-endpoint payload version negotiated by request header
+  request_header: x-v
+  minimum_header: x-min-v
+  uri_family_version: cds-au/v1
+  current_standard: '1.36.0'
+  standard_published: '2025-12-04'
+  publisher: Data Standards Body (DSB)
+  docs: https://consumerdatastandardsaustralia.github.io/standards/#versioning
+  observed_endpoint_versions:
+    listEnergyPlans: '1'
+    getEnergyPlanDetail: '3'
+    getStatus: '1'
+    getOutages: '1'
+    getCustomer: '1'
+    getCustomerDetail: '2'
+    listEnergyAccounts: '2'
+    getEnergyAccountDetail: '4'
+    listElectricityServicePoints: '2'
+    getElectricityServicePointDetail: '2'
+    getBillingForEnergyAccount: '3'
+    listEnergyAccountBillingBulk: '3'
+    listEnergyAccountBillingForSpecificAccounts: '3'
+  evidence: >-
+    Live version negotiation verified on the public surface: GET
+    /energy/plans/ENE831725MRE15@EME returned HTTP 406 "Unsupported Version" at x-v 1
+    (min=3) and HTTP 200 at x-v 3 on 2026-07-27. Correct per-endpoint negotiation is
+    itself evidence of a conformant implementation rather than a static file.
+deprecation:
+  policy_url: https://consumerdatastandardsaustralia.github.io/standards/#future-dated-obligations
+  publisher: Data Standards Body (DSB)
+  provider_published: false
+  sunset_header: false
+  rfc8594: false
+  mechanism: >-
+    Endpoint versions are deprecated and retired on published, dated obligations rather
+    than by RFC 8594 Sunset/Deprecation response headers. The DSB publishes a
+    Future Dated Obligations schedule: a new endpoint version is given a mandatory
+    implementation date, and the superseded version may then be retired from a stated
+    date (typically no earlier than twelve months after the new version becomes
+    binding). Data holders must serve overlapping versions through the transition, which
+    is why x-min-v exists.
+  example: >-
+    Get Generic Plan Detail v2 was retired after v3 became the mandatory version — the
+    live EnergyAustralia brand path now refuses x-v 1 on that endpoint and answers at
+    x-v 3, matching the published schedule.
+  obsolete_versions_index: https://consumerdatastandardsaustralia.github.io/standards/includes/obsolete/
+  deprecated_operations: []
+  deprecated_operations_note: >-
+    No operation in either harvested OpenAPI carries `deprecated: true`; the standards
+    remove retired versions from the current document rather than flagging them in place.
+status_page:
+  type: machine-readable status endpoint (CDS Common API Discovery)
+  url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  outages_url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/outages
+  human_status_page: null
+  human_status_page_note: >-
+    No status.energyaustralia.com.au or equivalent human status page exists. The
+    operational-health surface for this brand is the standards' Discovery endpoints,
+    which are public and unauthenticated.
+  operations: [getStatus, getOutages]
+  status_values: [OK, PARTIAL_FAILURE, SCHEDULED_OUTAGE, UNAVAILABLE]
+  evidence: >-
+    GET /discovery/status returned HTTP 200 with data.status "OK" and updateTime
+    2026-07-27T12:14:46.428Z; GET /discovery/outages returned HTTP 200 with an empty
+    outages array. Re-verified 2026-07-27.
+  covers: >-
+    The AER Energy Made Easy gateway serving the EnergyAustralia brand path. It does NOT
+    cover the accredited-only consumer surface at authncdr.energyaustralia.com.au, whose
+    own Discovery endpoints were not anonymously reachable.
+sla:
+  url: https://consumerdatastandardsaustralia.github.io/standards/#availability-requirements
+  publisher: Data Standards Body (DSB)
+  provider_published: false
+  note: >-
+    Availability and performance are set as Non-Functional Requirements in the Consumer
+    Data Standards and are obligations on the data holder, not a commercial SLA offered
+    by EnergyAustralia to developers. No developer-facing SLA exists because there is no
+    developer-facing product.
+support:
+  developer_support: none
+  note: >-
+    No developer portal, no developer support channel, no self-serve signup. Consumer
+    support is https://www.energyaustralia.com.au/home/help-and-support. Ecosystem
+    support for accredited recipients runs through the ACCC CDR service desk and the DSB
+    standards-maintenance repository.
+  standards_maintenance: https://github.com/ConsumerDataStandardsAustralia/standards-maintenance
+retirement_risk:
+  surface_hosted_by_third_party: true
+  note: >-
+    The only publicly reachable EnergyAustralia API surface is hosted by the Australian
+    Energy Regulator, not by EnergyAustralia. Its continuity is a function of the AER's
+    Energy Made Easy CDR gateway and of the CDR designation for energy, not of any
+    EnergyAustralia product decision.
+cross_references:
+  changelog: changelog/energyaustralia-changelog.yml
+  conventions: conventions/energyaustralia-conventions.yml
+  conformance: conformance/energyaustralia-conformance.yml

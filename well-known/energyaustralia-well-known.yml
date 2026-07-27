@@ -1,0 +1,69 @@
+generated: '2026-07-27'
+method: searched
+source: live HTTP probes on 2026-07-27
+result: none
+note: >-
+  Every /.well-known/ discovery path was probed against every host in apis.yml and the
+  registered CDR publicBaseUri. Nothing was found. This is a recorded negative result,
+  not a gap in the harvest — no document was saved because none exists, and no
+  `WellKnown`, `SecurityTxt` or `APICatalog` pointer is wired into apis.yml as a result.
+hosts:
+- host: https://cdr.energymadeeasy.gov.au
+  role: AER Energy Made Easy CDR gateway, EnergyAustralia brand path (public surface)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: https://authncdr.energyaustralia.com.au
+  role: EnergyAustralia's registered CDR publicBaseUri (accredited-only consumer surface)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /llms.txt, status: 404}
+  note: >-
+    The OIDC discovery document is required by the CDR security profile to exist at this
+    host, but is reachable only over mutual TLS with a CDR Register-issued client
+    certificate. Anonymous 404 here means gated, not absent.
+- host: https://api.energyaustralia.com.au
+  role: EnergyAustralia MuleSoft Anypoint gateway (closed partner/internal)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: https://www.energyaustralia.com.au
+  role: corporate website
+  documents:
+  - {path: /.well-known/security.txt, status: 000, note: 'Akamai bot management resets the HTTP/2 stream for non-browser clients; not machine-readable'}
+  - {path: /.well-known/openid-configuration, status: 000}
+  - {path: /.well-known/oauth-authorization-server, status: 000}
+  - {path: /.well-known/oauth-protected-resource, status: 000}
+  - {path: /.well-known/api-catalog, status: 000}
+  - {path: /.well-known/ai-plugin.json, status: 000}
+  - {path: /llms.txt, status: 000}
+- host: https://energyaustralia.com.au
+  role: apex domain (redirects to www)
+  documents:
+  - {path: /.well-known/security.txt, status: 301}
+  - {path: /.well-known/openid-configuration, status: 301}
+  - {path: /.well-known/oauth-authorization-server, status: 301}
+  - {path: /.well-known/oauth-protected-resource, status: 301}
+  - {path: /.well-known/api-catalog, status: 301}
+  - {path: /.well-known/ai-plugin.json, status: 301}
+  - {path: /llms.txt, status: 301}
+security_txt:
+  found: false
+  note: >-
+    No RFC 9116 security.txt on any host. probe-security-programs.py returned
+    vdp=none trust=none for this provider on 2026-07-27.

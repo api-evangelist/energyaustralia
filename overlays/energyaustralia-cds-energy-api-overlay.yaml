@@ -1,0 +1,139 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for EnergyAustralia CDR Energy API
+  version: 1.0.0
+extends: openapi/energyaustralia-cds-energy-api-openapi.yml
+x-apievangelist:
+  generated: '2026-07-27'
+  method: generated
+  source: >-
+    Live probes of the EnergyAustralia CDR brand path on 2026-07-27 plus the repo's
+    derived artifacts. The harvested spec is the Data Standards Body's shared contract
+    with example.com servers and no security schemes; this overlay binds it to the real
+    EnergyAustralia hosts and records what was verified, without mutating the original.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: energyaustralia
+    x-apievangelist-provider-name: EnergyAustralia
+    x-apievangelist-spec-provenance: >-
+      Verbatim Data Standards Body contract (CDR Energy API 1.36.0), not authored by
+      EnergyAustralia. Stored here because it defines the endpoints EnergyAustralia
+      actually serves.
+    x-apievangelist-verified: '2026-07-27'
+- target: $.servers
+  update:
+  - url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+    description: >-
+      AER Energy Made Easy CDR gateway, EnergyAustralia brand path. PUBLIC and
+      unauthenticated. Serves the Product Reference Data operations only —
+      /energy/accounts and every other consumer path returns HTTP 404 here. Verified
+      HTTP 200 on /energy/plans (x-v 1, meta.totalRecords 1122) on 2026-07-27.
+    x-access: public
+    x-verified: true
+  - url: https://authncdr.energyaustralia.com.au/cds-au/v1
+    description: >-
+      EnergyAustralia's own CDR publicBaseUri as published in the ACCC CDR Register.
+      Serves the authenticated consumer data operations. ACCREDITED-ONLY — requires
+      mutual TLS with CDR Register-issued certificates and a FAPI 1.0 Advanced
+      OAuth2/OIDC consent. Every standards path probed anonymously returned HTTP 404.
+    x-access: accredited-only
+    x-verified: false
+  - url: https://mtls.dh.example.com/cds-au/v1
+    description: MTLS (original Data Standards Body placeholder, retained for reference)
+- target: $.components
+  update:
+    securitySchemes:
+      cdrOAuth2:
+        type: oauth2
+        description: >-
+          CDR Information Security profile — FAPI 1.0 Advanced authorization code flow
+          with PKCE, PAR, request object signing and private_key_jwt client
+          authentication. Not declared in the Data Standards Body source document, which
+          carries authorisation per-operation as x-scopes; added here so the contract is
+          machine-checkable. Authorization and token URLs are published only in the data
+          holder's OIDC discovery document, which is not anonymously reachable.
+        flows:
+          authorizationCode:
+            authorizationUrl: https://authncdr.energyaustralia.com.au/authorize
+            tokenUrl: https://authncdr.energyaustralia.com.au/token
+            x-unverified: true
+            x-note: >-
+              CONVENTIONAL PATHS, NOT VERIFIED. GET
+              https://authncdr.energyaustralia.com.au/.well-known/openid-configuration
+              returned HTTP 404 anonymously on 2026-07-27. Resolve these from the live
+              discovery document once accredited; do not rely on them as published.
+            scopes:
+              openid: Mandatory OpenID Connect base scope
+              energy:accounts.basic:read: Basic energy account data
+              energy:accounts.detail:read: Detailed energy account data
+              energy:accounts.paymentschedule:read: Agreed payment schedule
+              energy:accounts.concessions:read: Concessions and rebates
+              energy:billing:read: Balances, invoices and billing transactions
+              energy:electricity.servicepoints.basic:read: Basic electricity service point data
+              energy:electricity.servicepoints.detail:read: Detailed service point and NMI standing data
+              energy:electricity.usage:read: Interval and accumulated electricity usage
+              energy:electricity.der:read: Distributed Energy Resource register data
+      cdrMutualTLS:
+        type: mutualTLS
+        description: >-
+          Client transport certificate issued through the ACCC CDR Register PKI.
+          Required on every authenticated resource and token request.
+- target: $.paths['/energy/plans'].get
+  update:
+    x-apievangelist-verified:
+      date: '2026-07-27'
+      status: 200
+      request: 'GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans with x-v: 1'
+      observed:
+        x-v: '1'
+        totalRecords: 1122
+        gas_plans: 265
+        response_headers: [x-v, x-fapi-interaction-id, access-control-allow-origin, access-control-expose-headers]
+    x-access: public
+- target: $.paths['/energy/plans/{planId}'].get
+  update:
+    x-apievangelist-verified:
+      date: '2026-07-27'
+      status: 200
+      request: 'GET .../energy/plans/ENE831725MRE15@EME with x-v: 3'
+      observed:
+        x-v: '3'
+        negotiation: HTTP 406 Unsupported Version at x-v 1 (min=3), HTTP 200 at x-v 3
+    x-access: public
+- target: $.tags
+  update:
+  - name: Energy Plans
+    description: >-
+      Public Product Reference Data. Served for EnergyAustralia by the AER Energy Made
+      Easy CDR gateway. No key, no registration, no consent.
+    x-shortName: Plans
+    x-access: public
+  - name: Energy Accounts
+    description: Accredited-only consumer account data under CDR consent.
+    x-shortName: Accounts
+    x-access: accredited-only
+  - name: Energy Account Balances
+    description: Accredited-only balance data under CDR consent.
+    x-shortName: Account Balances
+    x-access: accredited-only
+  - name: Energy Account Billing
+    description: Accredited-only invoice and billing transaction data under CDR consent.
+    x-shortName: Billing
+    x-access: accredited-only
+  - name: Electricity Service Points
+    description: >-
+      Accredited-only NMI data. Standing data is sourced from AEMO as designated
+      secondary data holder.
+    x-shortName: Service Points
+    x-access: accredited-only
+  - name: Electricity Usage
+    description: Accredited-only interval and accumulated meter reads under CDR consent.
+    x-shortName: Usage
+    x-access: accredited-only
+  - name: Distributed Energy Resources
+    description: >-
+      Accredited-only DER register data — solar PV, battery and inverter records,
+      sourced via AEMO.
+    x-shortName: Distributed Energy Resources
+    x-access: accredited-only
