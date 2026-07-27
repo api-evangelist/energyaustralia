@@ -1,0 +1,161 @@
+aid: energyaustralia
+url: https://raw.githubusercontent.com/api-evangelist/energyaustralia/refs/heads/main/apis.yml
+name: EnergyAustralia
+kind: company
+description: >-
+  EnergyAustralia is one of Australia's "big three" gentailers — a vertically
+  integrated electricity and gas business owned by Hong Kong's CLP Group and headquartered
+  in Melbourne, generating from Yallourn, Mount Piper and Hallett alongside wind assets
+  and retailing to more than 1.7 million residential and business customers across
+  Victoria, New South Wales, Queensland, South Australia and the ACT. It sits on both
+  sides of the National Electricity Market value chain: a scheduled generator into
+  the NEM, and a retailer of record holding the customer relationship, the billing
+  account and the meter data. Its API posture is entirely a function of the Consumer
+  Data Right rather than of any product strategy. EnergyAustralia is a designated and
+  live CDR energy data holder — brand id 1cc7833a-b834-ed11-a832-000d3a8830d6 in the
+  ACCC CDR Register, public base URI https://authncdr.energyaustralia.com.au — but the
+  only anonymously reachable contract carrying its name is the Product Reference Data
+  surface, and that is hosted by the Australian Energy Regulator's Energy Made Easy
+  CDR gateway, not by EnergyAustralia. The company publishes no developer portal, no
+  OpenAPI of its own, no open market or generation data, and no self-serve signup; its
+  own gateway at api.energyaustralia.com.au (MuleSoft Anypoint) answers 403 to the
+  public. Consumer usage, billing and DER data is real, standardised and live, but
+  reachable only by an ACCC-accredited data recipient under consent. Open on plans,
+  closed on everything else.
+accessModel:
+  pricing: free
+  onboarding: none
+  trial: false
+  try_now: false
+  public: true
+  label: Public CDR product data · Consumer data accredited-only
+  confidence: high
+  source:
+  - review
+  generated: '2026-07-27'
+  method: manual
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+tags:
+- Energy
+- Australia
+- Utilities
+- Electricity
+- Gas
+- Energy Retailer
+- Consumer Data Right
+- CDR
+- Product Reference Data
+- Smart Metering
+- Energy Markets
+- Renewables
+created: '2026-07-27'
+modified: '2026-07-27'
+specificationVersion: '0.19'
+apis:
+- aid: energyaustralia:energyaustralia-cdr-energy-plans-api
+  name: EnergyAustralia CDR Energy Plans API
+  description: >-
+    Public, unauthenticated Consumer Data Right energy Product Reference Data for the
+    EnergyAustralia brand, conforming to the Australian Consumer Data Standards energy
+    schemas. Unlike CDR banking — where every bank self-hosts its own product endpoint —
+    energy product data is served centrally by the Australian Energy Regulator's Energy
+    Made Easy CDR gateway on a per-retailer path. Confirmed live on 2026-07-27: GET
+    /energy/plans returned HTTP 200 with response header x-v 1 and meta.totalRecords of
+    1122 published EnergyAustralia plans (265 of them GAS fuelType), and GET
+    /energy/plans/{planId} returned HTTP 200 at x-v 3 for planId ENE831725MRE15@EME.
+    No API key, no registration, no consent required.
+  humanURL: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Consumer Data Right
+  - CDR
+  - Product Reference Data
+  - Energy
+  - Electricity
+  - Gas
+  - Australia
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-cds-energy-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+- aid: energyaustralia:energyaustralia-cdr-discovery-api
+  name: EnergyAustralia CDR Discovery Status API
+  description: >-
+    The Consumer Data Standards Common API discovery endpoints served for the
+    EnergyAustralia brand path on the AER Energy Made Easy CDR gateway. Public and
+    unauthenticated. Confirmed live on 2026-07-27: GET /discovery/status returned HTTP
+    200 with data.status "OK", and GET /discovery/outages returned HTTP 200 with an
+    empty outages array. These are the only operational-health contracts published
+    under the EnergyAustralia name.
+  humanURL: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Consumer Data Right
+  - CDR
+  - Discovery
+  - Status
+  - Australia
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-cds-common-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+- aid: energyaustralia:energyaustralia-cdr-energy-consumer-data-api
+  name: EnergyAustralia CDR Energy Consumer Data Sharing API
+  description: >-
+    The mandated, authenticated Consumer Data Right consumer data-sharing surface —
+    energy accounts, invoices, billing, balances, concessions, payment schedules,
+    electricity service points, interval usage and DER register data — implemented to
+    the Consumer Data Standards CDR Energy API. EnergyAustralia is a live registered
+    CDR energy data holder; the ACCC CDR Register returned its brand entry on
+    2026-07-27 (dataHolderBrandId 1cc7833a-b834-ed11-a832-000d3a8830d6, ABN
+    99086014968, lastUpdated 2026-07-01) with publicBaseUri
+    https://authncdr.energyaustralia.com.au. That host is live behind Akamai and
+    Cloudflare but is not anonymously browsable: every standards path probed
+    (/.well-known/openid-configuration, /cds-au/v1/discovery/status,
+    /cds-au/v1/energy/plans, /cds-au/v1/energy/accounts) returned HTTP 404, and the
+    root 302-redirects to /admin/app. Access requires ACCC accreditation as a Data
+    Recipient, mTLS client certificates issued through the CDR Register, an OAuth2 /
+    OpenID Connect FAPI 1.0 authorisation with customer consent, and AEMO acting as
+    secondary data holder for metering and DER data. There is no developer signup.
+  humanURL: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
+  baseURL: https://authncdr.energyaustralia.com.au
+  tags:
+  - Consumer Data Right
+  - CDR
+  - Energy
+  - Usage Data
+  - Billing
+  - DER
+  - Smart Metering
+  - Australia
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-cds-energy-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+common:
+- type: Website
+  url: https://www.energyaustralia.com.au/
+- type: ConsumerDataRight
+  url: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
+- type: APIStandards
+  url: https://consumerdatastandardsaustralia.github.io/standards/
+- type: CDRRegister
+  url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+- type: LinkedIn
+  url: https://www.linkedin.com/company/energyaustralia
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

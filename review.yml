@@ -1,0 +1,300 @@
+aid: energyaustralia
+name: EnergyAustralia
+review:
+  question: Is EnergyAustralia's Consumer Data Right energy mandate an implementation
+    a developer can actually reach, or only an obligation on paper?
+  answer: >-
+    Both, split cleanly. The public product-data half is genuinely live and was
+    verified with HTTP 200 responses — but it is served by the regulator, not by
+    EnergyAustralia. The consumer-data half is registered, live and standards-bound,
+    but is reachable only by an ACCC-accredited data recipient and could not be
+    verified anonymously.
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  cdrRegisterEntryConfirmed: true
+  publicPrdConfirmed: true
+  retailerHostedSurfaceVerified: false
+  specProvenance: dsb-cds-standard
+  specScopeNote: |
+    EnergyAustralia publishes no proprietary OpenAPI. The two contracts saved under
+    openapi/ are the shared Data Standards Body (DSB) Consumer Data Standards
+    documents, downloaded verbatim and converted from JSON to YAML with no content
+    changes:
+      - openapi/energyaustralia-cds-energy-api-openapi.yml
+        "CDR Energy API" 1.36.0, OpenAPI 3.0.3, 18 paths, from
+        https://consumerdatastandardsaustralia.github.io/standards/includes/swagger/cds_energy.json
+        (HTTP 200, fetched 2026-07-27, 403,771 bytes)
+      - openapi/energyaustralia-cds-common-api-openapi.yml
+        "CDR Common API" 1.36.0, OpenAPI 3.0.3, 4 paths, from
+        https://consumerdatastandardsaustralia.github.io/standards/includes/swagger/cds_common.json
+        (HTTP 200, fetched 2026-07-27, 58,667 bytes)
+    These are the industry-shared standards, NOT EnergyAustralia-specific contracts.
+    They are stored here because the endpoints EnergyAustralia actually serves are
+    defined by them: GET /energy/plans and GET /energy/plans/{planId} (public), the
+    /discovery/status and /discovery/outages Common API endpoints (public), and the
+    full authenticated energy consumer surface (accredited-only).
+
+mandate:
+  regime: cdr-energy
+  regimeVerbatim: >-
+    The Australian Consumer Data Right — the same statutory regime, the same regulator
+    (ACCC), and the same Data Standards Body that produced the byte-for-byte identical
+    fifty-bank Product Reference Data contract in banking — was extended by designation
+    to the energy sector. EnergyAustralia was one of the initial tranche of retailers
+    brought into scope alongside AGL and Origin, with AEMO designated as secondary data
+    holder acting as the gateway for standardised metering, NMI standing and DER
+    register data.
+  status: live-implemented
+  statusEvidence:
+    - >-
+      CDR REGISTER ENTRY (primary evidence, not a claim): GET
+      https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary with
+      header x-v 1 returned HTTP 200 on 2026-07-27. The response contained 84 energy
+      data-holder brands, one of which is EnergyAustralia:
+      dataHolderBrandId 1cc7833a-b834-ed11-a832-000d3a8830d6,
+      interimId 1f1ef12a-f96f-467d-a69a-08160f2e6576,
+      industries ["energy"], abn 99086014968, acn 086014968,
+      publicBaseUri https://authncdr.energyaustralia.com.au,
+      lastUpdated 2026-07-01T12:15:10Z.
+    - >-
+      LIVE STANDARDS-CONFORMANT PUBLIC ENDPOINT: GET
+      https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans with
+      header x-v 1 returned HTTP 200, content-type application/json, response headers
+      x-v 1 and x-fapi-interaction-id, and a body with meta.totalRecords 1122 and
+      data.plans[] entries carrying brand "energyaustralia" / brandName
+      "EnergyAustralia". Filtering fuelType=GAS returned meta.totalRecords 265.
+    - >-
+      LIVE PLAN DETAIL: GET
+      https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans/ENE831725MRE15@EME
+      returned HTTP 406 "Unsupported Version" at x-v 1 (min=3) and HTTP 200 at x-v 3,
+      with a full electricityContract object — correct Consumer Data Standards version
+      negotiation behaviour, which is itself evidence of a conformant implementation
+      rather than a static file.
+    - >-
+      LIVE COMMON API DISCOVERY: GET
+      https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+      returned HTTP 200 with data.status "OK" and updateTime 2026-07-27T12:14:46.428Z;
+      GET .../discovery/outages returned HTTP 200 with an empty outages array.
+  statusCaveat: >-
+    The verified public implementation is NOT hosted by EnergyAustralia. The host
+    cdr.energymadeeasy.gov.au is the Australian Energy Regulator's Energy Made Easy CDR
+    gateway, which serves every retailer's product data on a per-brand path. This is the
+    structural divergence from banking: in CDR banking each bank stands up its own
+    public PRD host, so fifty banks published fifty identical contracts; in CDR energy
+    the AER is the designated data holder for product data and publishes one gateway,
+    so the retailer publishes nothing publicly at all. EnergyAustralia's own registered
+    publicBaseUri https://authncdr.energyaustralia.com.au is live infrastructure but
+    returned HTTP 404 on every Consumer Data Standards path probed anonymously and
+    302-redirects at root to /admin/app, so its consumer surface is recorded as
+    registered-and-obligated but NOT independently verified by this review.
+  dataStandard: >-
+    CDR Consumer Data Standards (energy) — CDR Energy API 1.36.0 and CDR Common API
+    1.36.0, OpenAPI 3.0.3, published by the Data Standards Body. No Green Button /
+    ESPI, no OpenADR, no IEEE 2030.5, no IEC CIM, no OCPP/OCPI reference found for
+    EnergyAustralia.
+
+consumerVsMarketData:
+  consumer_data_api: true
+  consumerDataNote: >-
+    Yes — mandated, live and standardised, but not open. A third party can obtain an
+    individual EnergyAustralia customer's accounts, invoices, billing, balances,
+    concessions, payment schedules, electricity service points, interval usage and DER
+    data, but only as an ACCC-accredited Data Recipient holding that customer's active
+    consent, over mTLS with a CDR Register-issued certificate and a FAPI 1.0
+    OAuth2/OIDC authorisation. There is no developer signup, no sandbox and no public
+    documentation of the endpoints beyond the DSB standard itself.
+  market_data_open: false
+  marketDataNote: >-
+    No. EnergyAustralia publishes no open grid, generation, dispatch, emissions or
+    market data of its own. That layer in Australia belongs to AEMO (NEM dispatch and
+    market data) and to third parties such as OpenNEM / Open Electricity — none of it
+    sourced from an EnergyAustralia API. As a scheduled NEM generator its plant data
+    reaches the public only through AEMO's feeds. The split is therefore inverted from
+    the usual utility pattern: EnergyAustralia's mandated consumer data is real but
+    gated, and its market data is not published by it at all.
+
+accessGate:
+  gate: accredited-only
+  whatADeveloperMustDo: >-
+    For product/plan data: nothing. Call
+    https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans with an
+    x-v header. No key, no account, no terms click-through. For anything about a real
+    customer: become an accredited Data Recipient under the CDR Rules — apply to the
+    ACCC, pass the accreditation assessment (or use an accredited intermediary /
+    CDR representative), onboard to the CDR Register, obtain client transport and
+    signing certificates, register the software product, then obtain per-consumer
+    consent through the authorisation flow. There is no route from "developer signs up"
+    to "reads EnergyAustralia customer data".
+  developerPortal:
+    exists: false
+    note: >-
+      No developer.energyaustralia.com.au, developers.*, docs.* or data.* subdomain
+      resolves in DNS. The only EnergyAustralia API host that resolves is
+      api.energyaustralia.com.au (CNAME energyaustralia.lb.anypointdns.net — a MuleSoft
+      Anypoint load balancer, A records 52.65.17.90 / 13.211.48.133), which returned
+      HTTP 403 Forbidden at root, HTTP 404 at /console, /openapi.json and /swagger.json,
+      and HTTP 504 at /api/v1. No public MuleSoft Anypoint Exchange portal exists
+      (https://anypoint.mulesoft.com/exchange/portals/energyaustralia/ returned HTTP
+      404). It is a closed partner/internal gateway, not a developer portal.
+
+authModel:
+  productReferenceData: none (public, unauthenticated GET; x-v version header required)
+  discovery: none (public, unauthenticated GET)
+  consumerDataSharing: >-
+    mTLS with CDR Register-issued client certificates + OAuth2 / OpenID Connect FAPI 1.0
+    Advanced profile with PAR and consent, under the ACCC/DSB accredited data recipient
+    model. Anonymous fetch of
+    https://authncdr.energyaustralia.com.au/.well-known/openid-configuration returned
+    HTTP 404 (JSON body {"status_code":404,...,"error":"unable to find the resource"}),
+    so the OIDC metadata could not be read without accreditation.
+homeMarket: Australia
+tier: utility-retailer
+
+findings:
+  summary: |
+    EnergyAustralia is the cleanest available control case for the question of whether a
+    statutory data mandate is replicable across sectors. Australia took the exact
+    machinery that produced identical public banking APIs at fifty institutions — the
+    Consumer Data Right, the ACCC, the Data Standards Body — and applied it to energy.
+    The mandate transplanted. The implementation SHAPE did not.
+
+    In banking, each data holder must stand up its own unauthenticated Product Reference
+    Data host, which is why the network holds fifty byte-for-byte identical bank
+    contracts. In energy, the Australian Energy Regulator is the designated data holder
+    for product data, so plan data for every retailer is served from one government
+    gateway — cdr.energymadeeasy.gov.au — on a per-brand path. EnergyAustralia therefore
+    publishes ZERO public API surface of its own, while a fully standards-conformant
+    public API carrying its brand and 1,122 of its plans is verifiably live. Both
+    statements are true simultaneously, and only recording them separately makes the
+    sector legible.
+
+    The consumer half is the reverse of the usual utility story. EnergyAustralia is a
+    registered, designated, live CDR energy data holder with a published base URI in the
+    ACCC register. That is real, and it is more than most utilities anywhere in the world
+    can claim. But no part of it is reachable without ACCC accreditation, and the
+    registered host answered 404 to every standards path probed anonymously, so this
+    review records the consumer surface as obligated and registered, verified only via
+    the register — never via the endpoint.
+
+    There is no developer portal, no self-serve tier, no proprietary OpenAPI, no
+    published open market or generation data, and no evidence of Green Button, OpenADR,
+    IEEE 2030.5, OCPP/OCPI or IEC CIM anywhere in EnergyAustralia's surface. Its EV and
+    solar work runs on partner platforms (Planet Ark Power eleXsys) rather than on an
+    EnergyAustralia API. The company's entire machine-readable footprint exists because a
+    regulator required it.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+      documented: true
+      note: >-
+        AER Energy Made Easy CDR gateway, EnergyAustralia brand path. Public,
+        unauthenticated. Confirmed HTTP 200 for /energy/plans (x-v 1),
+        /energy/plans/{planId} (x-v 3), /discovery/status and /discovery/outages.
+    - protocol: REST
+      scheme: https
+      baseURL: https://authncdr.energyaustralia.com.au
+      documented: true
+      note: >-
+        EnergyAustralia's own CDR publicBaseUri as published in the ACCC CDR Register.
+        Live host (Akamai edge; root 302 to /admin/app behind Cloudflare) but HTTP 404
+        on all anonymously probed Consumer Data Standards paths. ACCREDITED-ONLY,
+        UNVERIFIED by this review.
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.energyaustralia.com.au
+      documented: false
+      note: >-
+        MuleSoft Anypoint gateway. HTTP 403 at root, HTTP 404 at /console,
+        /openapi.json, /swagger.json, HTTP 504 at /api/v1. Closed; no public contract.
+  endpointsConfirmed:
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans (HTTP 200, x-v 1, meta.totalRecords 1122)
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans?fuelType=GAS (HTTP 200, meta.totalRecords 265)
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans/ENE831725MRE15@EME (HTTP 200 at x-v 3; HTTP 406 at x-v 1)
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status (HTTP 200, data.status OK)
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/outages (HTTP 200, empty outages array)
+    - GET https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary (HTTP 200, x-v 1, 84 energy brands incl. EnergyAustralia)
+  probesNegative:
+    - GET https://developer.energyaustralia.com.au/ (NXDOMAIN — no DNS record)
+    - GET https://developers.energyaustralia.com.au/ (NXDOMAIN — no DNS record)
+    - GET https://docs.energyaustralia.com.au/ (NXDOMAIN — no DNS record)
+    - GET https://data.energyaustralia.com.au/ (NXDOMAIN — no DNS record)
+    - GET https://api.cdr.energyaustralia.com.au/cds-au/v1/energy/plans (NXDOMAIN — no DNS record)
+    - GET https://cdr.energyaustralia.com.au/ (NXDOMAIN — no DNS record)
+    - GET https://cdr-api.energyaustralia.com.au/ (NXDOMAIN); cdrapi., cds., api-cdr., openbanking., energy.cdr., public.cdr. all NXDOMAIN
+    - GET https://api.energyaustralia.com.au/ (HTTP 403)
+    - GET https://api.energyaustralia.com.au/openapi.json (HTTP 404)
+    - GET https://api.energyaustralia.com.au/swagger.json (HTTP 404)
+    - GET https://api.energyaustralia.com.au/console (HTTP 404)
+    - GET https://api.energyaustralia.com.au/api/v1 (HTTP 504)
+    - GET https://anypoint.mulesoft.com/exchange/portals/energyaustralia/ (HTTP 404)
+    - GET https://authncdr.energyaustralia.com.au/.well-known/openid-configuration (HTTP 404)
+    - GET https://authncdr.energyaustralia.com.au/cds-au/v1/discovery/status (HTTP 404); /discovery/status, /cdr/*, /energy/*, /public/* prefixes all HTTP 404
+    - GET https://authncdr.energyaustralia.com.au/cds-au/v1/energy/plans (HTTP 404)
+    - GET https://authncdr.energyaustralia.com.au/cds-au/v1/energy/accounts (HTTP 404)
+    - GET https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/accounts (HTTP 404 — the AER gateway serves product data only, never consumer data)
+    - GET https://www.energyaustralia.com.au/ and all corporate paths (HTTP 000 — Akamai bot management resets the HTTP/2 stream for non-browser clients; TLS handshake and certificate validate, so the host is live but not machine-readable)
+sources:
+  - url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+    type: CDRRegister
+    note: >-
+      ACCC CDR Register public brand summary. HTTP 200 with x-v 1 on 2026-07-27.
+      Authoritative evidence that EnergyAustralia is a live registered CDR energy data
+      holder with publicBaseUri https://authncdr.energyaustralia.com.au.
+  - url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/energy/plans
+    type: APIReference
+    note: >-
+      Live probe 2026-07-27 returned HTTP 200 with x-v 1, x-fapi-interaction-id, and
+      1,122 EnergyAustralia plans. The only verifiably public API surface carrying the
+      EnergyAustralia name.
+  - url: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+    type: Documentation
+    note: >-
+      AER Energy Made Easy FAQ (HTTP 200) confirming the AER developed CDR-specific APIs
+      to share Energy Made Easy plan data in accordance with the CDR Rules and Data
+      Standards, and pointing to https://www.aer.gov.au/energy-product-reference-data.
+  - url: https://consumerdatastandardsaustralia.github.io/standards/
+    type: APIStandards
+    note: >-
+      Data Standards Body Consumer Data Standards (HTTP 200) defining the CDR Energy API
+      and CDR Common API contracts that EnergyAustralia's surfaces conform to.
+  - url: https://consumerdatastandardsaustralia.github.io/standards/includes/swagger/cds_energy.json
+    type: OpenAPI
+    note: >-
+      Source of openapi/energyaustralia-cds-energy-api-openapi.yml. HTTP 200, 403,771
+      bytes, CDR Energy API 1.36.0, OpenAPI 3.0.3, 18 paths. Converted JSON to YAML
+      verbatim.
+  - url: https://consumerdatastandardsaustralia.github.io/standards/includes/swagger/cds_common.json
+    type: OpenAPI
+    note: >-
+      Source of openapi/energyaustralia-cds-common-api-openapi.yml. HTTP 200, 58,667
+      bytes, CDR Common API 1.36.0, OpenAPI 3.0.3, 4 paths. Converted JSON to YAML
+      verbatim.
+  - url: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
+    type: ConsumerDataRight
+    note: >-
+      EnergyAustralia's own CDR customer FAQ. Could NOT be fetched programmatically
+      (HTTP 000 — Akamai bot management), and is recorded here from search-engine index
+      only. It states EnergyAustralia is a CDR data holder, that CDR is opt-in, that it
+      will never ask customers to share login credentials with a third party, and that
+      it can only share CDR data with an ACCC-accredited Data Recipient. It documents no
+      API and offers no developer access.
+  - url: https://en.wikipedia.org/wiki/EnergyAustralia
+    type: Reference
+    note: >-
+      Corporate identity: CLP Group subsidiary, Melbourne HQ, 1.7M+ residential and
+      business customers, Yallourn / Mount Piper / Hallett generation plus Cathedral
+      Rocks and Waterloo wind, operating across QLD/VIC/SA/NSW.
+actions:
+  openapiPaths:
+    - openapi/energyaustralia-cds-energy-api-openapi.yml
+    - openapi/energyaustralia-cds-common-api-openapi.yml
+  apisYmlUpdated: true
+  reason: >-
+    Three APIs listed. Two are verified-live public contracts served for the
+    EnergyAustralia brand on the AER's Energy Made Easy CDR gateway. The third is the
+    mandated consumer data-sharing surface, listed because the ACCC CDR Register
+    publishes EnergyAustralia's base URI and the Consumer Data Standards define the
+    contract — but flagged throughout as accredited-only and NOT independently verified.
+    No EnergyAustralia-authored specification, developer portal, or open market data
+    exists to record.
