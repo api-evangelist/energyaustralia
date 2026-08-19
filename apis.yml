@@ -67,7 +67,7 @@ enrichment:
     no UI components, no sandbox and no Postman collection exist. All recorded as
     verified negatives. The artifacts added are derived from the two harvested Consumer
     Data Standards contracts and from the live public brand path.
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: energyaustralia:energyaustralia-cdr-energy-plans-api
   name: EnergyAustralia CDR Energy Plans API
