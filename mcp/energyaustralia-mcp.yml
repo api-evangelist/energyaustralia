@@ -288,3 +288,9 @@ tools:
   access: public
   scopes: []
   inputs: []
+deployment:
+  mode: none
+  verified: derived
+  tools: 27
+  checked: '2026-08-12'
+  source: catalog MCP census
