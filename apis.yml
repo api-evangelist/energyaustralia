@@ -69,136 +69,321 @@ enrichment:
     Data Standards contracts and from the live public brand path.
 specificationVersion: '0.23'
 apis:
-- aid: energyaustralia:energyaustralia-cdr-energy-plans-api
-  name: EnergyAustralia CDR Energy Plans API
-  description: >-
-    Public, unauthenticated Consumer Data Right energy Product Reference Data for the
-    EnergyAustralia brand, conforming to the Australian Consumer Data Standards energy
-    schemas. Unlike CDR banking — where every bank self-hosts its own product endpoint —
-    energy product data is served centrally by the Australian Energy Regulator's Energy
-    Made Easy CDR gateway on a per-retailer path. Confirmed live on 2026-07-27: GET
-    /energy/plans returned HTTP 200 with response header x-v 1 and meta.totalRecords of
-    1122 published EnergyAustralia plans (265 of them GAS fuelType), and GET
-    /energy/plans/{planId} returned HTTP 200 at x-v 3 for planId ENE831725MRE15@EME.
-    No API key, no registration, no consent required.
-  humanURL: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+- aid: energyaustralia:energyaustralia-data-holder-customers-api
+  name: EnergyAustralia Data Holder Customers API
+  description: Data Holder Customer endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
   baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
   tags:
-  - Consumer Data Right
-  - CDR
-  - Product Reference Data
-  - Energy
-  - Electricity
-  - Gas
-  - Australia
+  - Data Holder Customers
   properties:
   - type: OpenAPI
-    url: openapi/energyaustralia-cds-energy-api-openapi.yml
+    url: openapi/energyaustralia-data-holder-customers-api-openapi.yml
   - type: APIReference
     url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
   - type: Documentation
-    url: https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
   - type: APIStandards
     url: https://consumerdatastandardsaustralia.github.io/standards/
-  - type: Overlay
-    url: overlays/energyaustralia-cds-energy-api-overlay.yaml
   - type: ErrorCatalog
     url: errors/energyaustralia-problem-types.yml
   - type: Conventions
     url: conventions/energyaustralia-conventions.yml
   - type: DataModel
     url: data-model/energyaustralia-data-model.yml
-  - type: AgentSkill
-    name: Compare EnergyAustralia energy plans
-    url: skills/energyaustralia-compare-energy-plans.md
-- aid: energyaustralia:energyaustralia-cdr-discovery-api
-  name: EnergyAustralia CDR Discovery Status API
-  description: >-
-    The Consumer Data Standards Common API discovery endpoints served for the
-    EnergyAustralia brand path on the AER Energy Made Easy CDR gateway. Public and
-    unauthenticated. Confirmed live on 2026-07-27: GET /discovery/status returned HTTP
-    200 with data.status "OK", and GET /discovery/outages returned HTTP 200 with an
-    empty outages array. These are the only operational-health contracts published
-    under the EnergyAustralia name.
-  humanURL: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
-  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
-  tags:
-  - Consumer Data Right
-  - CDR
-  - Discovery
-  - Status
-  - Australia
-  properties:
-  - type: OpenAPI
-    url: openapi/energyaustralia-cds-common-api-openapi.yml
   - type: APIReference
     url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
-  - type: APIStandards
-    url: https://consumerdatastandardsaustralia.github.io/standards/
-  - type: Overlay
-    url: overlays/energyaustralia-cds-common-api-overlay.yaml
   - type: StatusPage
     url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
-  - type: AgentSkill
-    name: Check EnergyAustralia CDR status and scheduled outages
-    url: skills/energyaustralia-check-status-and-outages.md
-- aid: energyaustralia:energyaustralia-cdr-energy-consumer-data-api
-  name: EnergyAustralia CDR Energy Consumer Data Sharing API
-  description: >-
-    The mandated, authenticated Consumer Data Right consumer data-sharing surface —
-    energy accounts, invoices, billing, balances, concessions, payment schedules,
-    electricity service points, interval usage and DER register data — implemented to
-    the Consumer Data Standards CDR Energy API. EnergyAustralia is a live registered
-    CDR energy data holder; the ACCC CDR Register returned its brand entry on
-    2026-07-27 (dataHolderBrandId 1cc7833a-b834-ed11-a832-000d3a8830d6, ABN
-    99086014968, lastUpdated 2026-07-01) with publicBaseUri
-    https://authncdr.energyaustralia.com.au. That host is live behind Akamai and
-    Cloudflare but is not anonymously browsable: every standards path probed
-    (/.well-known/openid-configuration, /cds-au/v1/discovery/status,
-    /cds-au/v1/energy/plans, /cds-au/v1/energy/accounts) returned HTTP 404, and the
-    root 302-redirects to /admin/app. Access requires ACCC accreditation as a Data
-    Recipient, mTLS client certificates issued through the CDR Register, an OAuth2 /
-    OpenID Connect FAPI 1.0 authorisation with customer consent, and AEMO acting as
-    secondary data holder for metering and DER data. There is no developer signup.
-  humanURL: https://www.energyaustralia.com.au/home/help-support/faqs/consumer-data-right
-  baseURL: https://authncdr.energyaustralia.com.au
-  tags:
-  - Consumer Data Right
-  - CDR
-  - Energy
-  - Usage Data
-  - Billing
-  - DER
-  - Smart Metering
-  - Australia
-  properties:
-  - type: OpenAPI
-    url: openapi/energyaustralia-cds-energy-api-openapi.yml
-  - type: APIReference
-    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
-  - type: APIStandards
-    url: https://consumerdatastandardsaustralia.github.io/standards/
   - type: CDRRegister
     url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
   - type: Authentication
     url: authentication/energyaustralia-authentication.yml
   - type: OAuthScopes
     url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-data-holder-operations-api
+  name: EnergyAustralia Data Holder Operations API
+  description: Data Holder Operations endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Data Holder Operations
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-data-holder-operations-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
   - type: ErrorCatalog
     url: errors/energyaustralia-problem-types.yml
   - type: Conventions
     url: conventions/energyaustralia-conventions.yml
   - type: DataModel
     url: data-model/energyaustralia-data-model.yml
-  - type: Overlay
-    url: overlays/energyaustralia-cds-energy-api-overlay.yaml
-  - type: AgentSkill
-    name: Read EnergyAustralia customer accounts and billing under CDR consent
-    url: skills/energyaustralia-consumer-data-sharing.md
-  - type: AgentSkill
-    name: Read EnergyAustralia electricity service points, interval usage and DER data
-    url: skills/energyaustralia-usage-and-der.md
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-distributed-energy-resources-api
+  name: EnergyAustralia Distributed Energy Resources API
+  description: Distributed Energy Resource endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Distributed Energy Resources
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-distributed-energy-resources-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-electricity-service-points-api
+  name: EnergyAustralia Electricity Service Points API
+  description: Electricity Service Point endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Electricity Service Points
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-electricity-service-points-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-electricity-usage-api
+  name: EnergyAustralia Electricity Usage API
+  description: Electricity Usage endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Electricity Usage
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-electricity-usage-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-energy-account-balances-api
+  name: EnergyAustralia Energy Account Balances API
+  description: Energy Account Balance endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Energy Account Balances
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-energy-account-balances-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-energy-account-billing-api
+  name: EnergyAustralia Energy Account Billing API
+  description: Energy Account Billing endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Energy Account Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-energy-account-billing-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-energy-accounts-api
+  name: EnergyAustralia Energy Accounts API
+  description: Energy Account endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Energy Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-energy-accounts-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
+- aid: energyaustralia:energyaustralia-energy-plans-api
+  name: EnergyAustralia Energy Plans API
+  description: Energy Plan endpoints
+  humanURL: >-
+    https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  baseURL: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1
+  tags:
+  - Energy Plans
+  properties:
+  - type: OpenAPI
+    url: openapi/energyaustralia-energy-plans-api-openapi.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#energy-apis
+  - type: Documentation
+    url: >-
+      https://www.energymadeeasy.gov.au/frequently-asked-questions/how-can-i-get-access-to-the-energy-made-easy-plan-data
+  - type: APIStandards
+    url: https://consumerdatastandardsaustralia.github.io/standards/
+  - type: ErrorCatalog
+    url: errors/energyaustralia-problem-types.yml
+  - type: Conventions
+    url: conventions/energyaustralia-conventions.yml
+  - type: DataModel
+    url: data-model/energyaustralia-data-model.yml
+  - type: APIReference
+    url: https://consumerdatastandardsaustralia.github.io/standards/#common-apis
+  - type: StatusPage
+    url: https://cdr.energymadeeasy.gov.au/energyaustralia/cds-au/v1/discovery/status
+  - type: CDRRegister
+    url: https://api.cdr.gov.au/cdr-register/v1/energy/data-holders/brands/summary
+  - type: Authentication
+    url: authentication/energyaustralia-authentication.yml
+  - type: OAuthScopes
+    url: scopes/energyaustralia-scopes.yml
 common:
+- type: AgentSkill
+  url: skills/energyaustralia-compare-energy-plans.md
+- type: AgentSkill
+  url: skills/energyaustralia-check-status-and-outages.md
+- type: AgentSkill
+  url: skills/energyaustralia-consumer-data-sharing.md
+- type: AgentSkill
+  url: skills/energyaustralia-usage-and-der.md
 - type: AgenticAccess
   url: agentic-access/energyaustralia-agentic-access.yml
 - type: DomainSecurity
