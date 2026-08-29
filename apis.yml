@@ -22,6 +22,18 @@ description: >-
   public. Consumer usage, billing and DER data is real, standardised and live, but
   reachable only by an ACCC-accredited data recipient under consent. Open on plans,
   closed on everything else.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: free
   onboarding: none
