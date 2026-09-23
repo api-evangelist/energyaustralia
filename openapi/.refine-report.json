@@ -1,0 +1,38 @@
+{
+  "provider": "energyaustralia",
+  "sources": [
+    "_original/energyaustralia-cds-common-api-openapi.yml",
+    "_original/energyaustralia-cds-energy-api-openapi.yml"
+  ],
+  "outputs": [
+    "energyaustralia-data-holder-customers-api-openapi.yml",
+    "energyaustralia-data-holder-operations-api-openapi.yml",
+    "energyaustralia-distributed-energy-resources-api-openapi.yml",
+    "energyaustralia-electricity-service-points-api-openapi.yml",
+    "energyaustralia-electricity-usage-api-openapi.yml",
+    "energyaustralia-energy-account-balances-api-openapi.yml",
+    "energyaustralia-energy-account-billing-api-openapi.yml",
+    "energyaustralia-energy-accounts-api-openapi.yml",
+    "energyaustralia-energy-plans-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "energyaustralia-cds-common-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "energyaustralia-cds-energy-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "energyaustralia-data-holder-customers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-data-holder-operations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-distributed-energy-resources-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-electricity-service-points-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-electricity-usage-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-energy-account-balances-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-energy-account-billing-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-energy-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "energyaustralia-energy-plans-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
