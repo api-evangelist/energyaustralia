@@ -365,14 +365,7 @@ paths:
       x-version: '1'
 components:
   schemas:
-    RequestAccountIdListV1:
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestAccountIdListV1_data'
-        meta:
-          $ref: '#/components/schemas/Meta'
-      required:
-      - data
+    Meta:
       type: object
     EnergyBalanceListResponse_data:
       properties:
@@ -384,15 +377,68 @@ components:
       required:
       - balances
       type: object
-    ErrorV2_meta:
-      description: Additional data for customised error codes.
+    EnergyAccountId:
+      description: A unique identifier for an Energy account, generated according to [CDR ID Permanence](#id-permanence) requirements.
+      type: string
+      x-cds-type: ASCIIString
+    RequestAccountIdListV1:
       properties:
-        urn:
-          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
-          type: string
+        data:
+          $ref: '#/components/schemas/RequestAccountIdListV1_data'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
       type: object
-      x-conditional:
-      - urn
+    EnergyBalanceListResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/EnergyBalanceListResponse_data'
+        links:
+          $ref: '#/components/schemas/LinksPaginated'
+        meta:
+          $ref: '#/components/schemas/MetaPaginated'
+      required:
+      - data
+      - links
+      - meta
+      type: object
+    EnergyBalanceResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/EnergyBalanceResponse_data'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - links
+      type: object
+    EnergyBalanceListResponse_data_balances:
+      properties:
+        accountId:
+          allOf:
+          - $ref: '#/components/schemas/EnergyAccountId'
+          description: Unique identifier for the account.
+        balance:
+          description: The current balance of the account. A positive value indicates that amount is owing to be paid. A negative value indicates that the account is in credit.
+          type: string
+          x-cds-type: AmountString
+      required:
+      - accountId
+      - balance
+      type: object
+    ResponseErrorListV2:
+      properties:
+        errors:
+          description: List of errors.
+          items:
+            $ref: '#/components/schemas/ErrorV2'
+          type: array
+      required:
+      - errors
+      type: object
     ErrorV2:
       properties:
         code:
@@ -427,16 +473,15 @@ components:
       - totalPages
       - totalRecords
       type: object
-    RequestAccountIdListV1_data:
+    ErrorV2_meta:
+      description: Additional data for customised error codes.
       properties:
-        accountIds:
-          description: Array of _accountId_ values to obtain data for.
-          items:
-            $ref: '#/components/schemas/EnergyAccountId'
-          type: array
-      required:
-      - accountIds
+        urn:
+          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
+          type: string
       type: object
+      x-conditional:
+      - urn
     Links:
       properties:
         self:
@@ -445,16 +490,6 @@ components:
           x-cds-type: URIString
       required:
       - self
-      type: object
-    ResponseErrorListV2:
-      properties:
-        errors:
-          description: List of errors.
-          items:
-            $ref: '#/components/schemas/ErrorV2'
-          type: array
-      required:
-      - errors
       type: object
     LinksPaginated:
       properties:
@@ -486,33 +521,6 @@ components:
       - prev
       - next
       - last
-    EnergyBalanceListResponse_data_balances:
-      properties:
-        accountId:
-          allOf:
-          - $ref: '#/components/schemas/EnergyAccountId'
-          description: Unique identifier for the account.
-        balance:
-          description: The current balance of the account. A positive value indicates that amount is owing to be paid. A negative value indicates that the account is in credit.
-          type: string
-          x-cds-type: AmountString
-      required:
-      - accountId
-      - balance
-      type: object
-    EnergyBalanceListResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/EnergyBalanceListResponse_data'
-        links:
-          $ref: '#/components/schemas/LinksPaginated'
-        meta:
-          $ref: '#/components/schemas/MetaPaginated'
-      required:
-      - data
-      - links
-      - meta
-      type: object
     EnergyBalanceResponse_data:
       properties:
         balance:
@@ -522,24 +530,24 @@ components:
       required:
       - balance
       type: object
-    EnergyBalanceResponse:
+    RequestAccountIdListV1_data:
       properties:
-        data:
-          $ref: '#/components/schemas/EnergyBalanceResponse_data'
-        links:
-          $ref: '#/components/schemas/Links'
-        meta:
-          $ref: '#/components/schemas/Meta'
+        accountIds:
+          description: Array of _accountId_ values to obtain data for.
+          items:
+            $ref: '#/components/schemas/EnergyAccountId'
+          type: array
       required:
-      - data
-      - links
+      - accountIds
       type: object
-    EnergyAccountId:
-      description: A unique identifier for an Energy account, generated according to [CDR ID Permanence](#id-permanence) requirements.
-      type: string
-      x-cds-type: ASCIIString
-    Meta:
-      type: object
+  requestBodies:
+    RequestAccountIds:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestAccountIdListV1'
+      description: Request payload containing a list of _accountId_ values to obtain data for.
+      required: true
   headers:
     XV:
       description: The [payload version](#response-headers) that the endpoint has responded with.
@@ -555,11 +563,3 @@ components:
       schema:
         type: string
       style: simple
-  requestBodies:
-    RequestAccountIds:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RequestAccountIdListV1'
-      description: Request payload containing a list of _accountId_ values to obtain data for.
-      required: true
