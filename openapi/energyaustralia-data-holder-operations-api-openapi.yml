@@ -120,17 +120,16 @@ paths:
       x-version: '1'
 components:
   schemas:
-    Meta:
-      type: object
-    ResponseDiscoveryOutagesList_data:
+    Links:
       properties:
-        outages:
-          description: List of scheduled outages. Property is mandatory but may contain an empty list if no outages are scheduled.
-          items:
-            $ref: '#/components/schemas/DiscoveryOutage'
-          type: array
+        self:
+          description: Fully qualified link that generated the current response document.
+          type: string
+          x-cds-type: URIString
       required:
-      - outages
+      - self
+      type: object
+    Meta:
       type: object
     ResponseCommonDiscoveryStatus_data:
       properties:
@@ -163,18 +162,6 @@ components:
       type: object
       x-conditional:
       - explanation
-    ResponseCommonDiscoveryStatus:
-      properties:
-        data:
-          $ref: '#/components/schemas/ResponseCommonDiscoveryStatus_data'
-        links:
-          $ref: '#/components/schemas/Links'
-        meta:
-          $ref: '#/components/schemas/Meta'
-      required:
-      - data
-      - links
-      type: object
     ResponseErrorListV2:
       properties:
         errors:
@@ -205,6 +192,18 @@ components:
       type: object
       x-conditional:
       - meta
+    ResponseCommonDiscoveryStatus:
+      properties:
+        data:
+          $ref: '#/components/schemas/ResponseCommonDiscoveryStatus_data'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - links
+      type: object
     ErrorV2_meta:
       description: Additional data for customised error codes.
       properties:
@@ -226,14 +225,15 @@ components:
       - data
       - links
       type: object
-    Links:
+    ResponseDiscoveryOutagesList_data:
       properties:
-        self:
-          description: Fully qualified link that generated the current response document.
-          type: string
-          x-cds-type: URIString
+        outages:
+          description: List of scheduled outages. Property is mandatory but may contain an empty list if no outages are scheduled.
+          items:
+            $ref: '#/components/schemas/DiscoveryOutage'
+          type: array
       required:
-      - self
+      - outages
       type: object
     DiscoveryOutage:
       properties:
